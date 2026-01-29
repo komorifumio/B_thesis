@@ -1,7 +1,7 @@
 \Appendix
 % 付録
 
-\section{使用機材の諸元}
+\section*{使用機材の諸元}
 本研究の実験システムを構成するロボットアームおよびカメラの主要な仕様を、表\ref{tab:system_specs}にまとめる。
 
 \begin{table}[htbp]
@@ -32,7 +32,7 @@
     \end{tabular}
 \end{table}
 
-\subsection{重力補償のキャリブレーションパラメータ}
+\subsection*{重力補償のキャリブレーションパラメータ}
 
 本研究で導入した重力補償の各関節アクチュエータ（ROBOTIS Dynamixel）におけるトルク電流比および制御パラメータのキャリブレーション結果を参考までに表\ref{tab:gravity_comp_params}に示す。
 
@@ -56,7 +56,7 @@
 \end{table}
 
 \clearpage
-\section{キムタオル把持タスクの実験時のロボットの動作遷移}
+\section*{キムタオル把持タスクの実験時のロボットの動作遷移}
 \setcounter{figure}{0}
 \renewcommand{\thefigure}{B.\arabic{figure}}
 
@@ -169,11 +169,167 @@
 
 
 \clearpage
-\section{折り紙タスクの実験時のロボットの動作遷移}
+\section*{折り紙タスクの実験時のロボットの動作遷移}
+\setcounter{figure}{0}
+\renewcommand{\thefigure}{C.\arabic{figure}}
+
+折り紙タスクにおけるロボットの動作遷移を以下に示す．
+
+\begin{figure}[htbp]
+  \centering
+  % Top row: 4 screenshots
+  \begin{subfigure}[t]{0.24\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{tex/Image/kamiyoko1.pdf}
+    \caption*{\#1}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.24\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{tex/Image/kamiyoko2.pdf}
+    \caption*{\#2}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.24\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{tex/Image/kamiyoko3.pdf}
+    \caption*{\#3}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.24\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{tex/Image/kamiyoko4.pdf}
+    \caption*{\#4}
+  \end{subfigure}
+
+  \vspace{2mm}
+
+  % Middle row: 4 screenshots
+  \begin{subfigure}[t]{0.24\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{tex/Image/kamiyoko5.pdf}
+    \caption*{\#5}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.24\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{tex/Image/kamiyoko6.pdf}
+    \caption*{\#6}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.24\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{tex/Image/kamiyoko7.pdf}
+    \caption*{\#7}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.24\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{tex/Image/kamiyoko8.pdf}
+    \caption*{\#8}
+  \end{subfigure}
+
+  \vspace{2mm}
+
+  % Bottom row: 4 screenshots
+  \begin{subfigure}[t]{0.24\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{tex/Image/kamiyoko9.pdf}
+    \caption*{\#9}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.24\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{tex/Image/kamiyoko10.pdf}
+    \caption*{\#10}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.24\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{tex/Image/kamiyoko11.pdf}
+    \caption*{\#11}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.24\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{tex/Image/kamiyoko12.pdf}
+    \caption*{\#12}
+  \end{subfigure}
+
+  \caption{Sequence of side-view camera images during origami task in time order.}
+  \label{figC:kamiyoko_timeorder}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  % Top row: 4 top-view screenshots
+  \begin{subfigure}[t]{0.24\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{tex/Image/kamiue1.pdf}
+    \caption*{\#1}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.24\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{tex/Image/kamiue2.pdf}
+    \caption*{\#2}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.24\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{tex/Image/kamiue3.pdf}
+    \caption*{\#3}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.24\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{tex/Image/kamiue4.pdf}
+    \caption*{\#4}
+  \end{subfigure}
+
+  \vspace{2mm}
+
+  % Middle row: 4 top-view screenshots
+  \begin{subfigure}[t]{0.24\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{tex/Image/kamiue5.pdf}
+    \caption*{\#5}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.24\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{tex/Image/kamiue6.pdf}
+    \caption*{\#6}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.24\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{tex/Image/kamiue7.pdf}
+    \caption*{\#7}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.24\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{tex/Image/kamiue8.pdf}
+    \caption*{\#8}
+  \end{subfigure}
+
+  \vspace{2mm}
+
+  % Bottom row: 4 top-view screenshots
+  \begin{subfigure}[t]{0.24\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{tex/Image/kamiue9.pdf}
+    \caption*{\#9}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.24\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{tex/Image/kamiue10.pdf}
+    \caption*{\#10}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.24\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{tex/Image/kamiue11.pdf}
+    \caption*{\#11}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.24\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{tex/Image/kamiue12.pdf}
+    \caption*{\#12}
+  \end{subfigure}
+
+  \caption{Sequence of top-view camera images during origami task in time order.}
+  \label{figC:kamiue_timeorder}
+\end{figure}
 
 
 \clearpage
-\section{触覚を融合したACTモデルの詳細}
+\section*{触覚を融合したACTモデルの詳細}
 特徴抽出と埋め込み
 本システムには，RGBカメラ画像、ロボットの関節角度、および指先触覚センサの値が入力される。Transformerは内部計算において、全ての入力データが同一の次元（ベクトル長）を持つことを前提とするため、各モダリティ（情報の種類）に対して以下の前処理を行い、共通の次元 $d_{model}$ を持つ「トークン（特徴ベクトル）」へ変換する。\par
 
