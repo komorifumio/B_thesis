@@ -1,0 +1,392 @@
+% === 更新情報 =======================================================
+% 2024/04 : 阪大テンプレを京大用に修正(Kunita)
+% 2025/01 : ページにヘッダーを追加(ozaki)
+% 2025/02 : 表紙を京大の様式に変更(Uehara)
+% 2025/04 : 謝辞のヘッダーが結言となる不具合の修正(Uehara)
+% 2025/05 : 体裁を再調整(Kunita)
+% 以降の更新情報はgitのコミットログを参照してください。
+% ====================================================================
+
+%#! jlatex main.tex
+%
+ \textwidth=16cm % 16cm 
+\textheight=25cm %  26cm
+\topmargin=-1cm % -2cm
+ \oddsidemargin=0cm % 0cm 
+ \evensidemargin=0cm % 0cm %-1cm
+\headheight=16pt %ヘッダーの表示のために15.5pt以上は確保
+\def\baselinestretch{1.2}
+ \setlength{\columnsep}{40pt}
+
+\usepackage{needspace}
+
+% Section Header
+%	from jarticle.sty, however, font and size was modified.
+%
+%脚注でのインデント
+\long\def\@makefntext#1{\parindent 1em\noindent
+   \hbox to 2em{\hss$^{\@thefnmark}$~}%
+ \@tempdima\columnwidth\advance\@tempdima-2em\parbox[t]{\@tempdima}{#1}}
+
+%packageによる上書きを防ぐために，document開始後に定義
+
+  \def\section{\clearpage\@startsection {section}{1}{\z@}
+    {3.5ex plus 1ex minus .2ex}{2.3ex plus .2ex}{\Large\bf}}
+  % \def\section{\needspace{5\baselineskip}\@startsection {section}{1}{\z@}
+  %     {3.5ex plus 1ex minus .2ex}{2.3ex plus .2ex}{\Large\bf}}
+\def\subsection{\@startsection{subsection}{2}
+            {\z@}{3.25ex plus 1ex minus .2ex}
+               {1.5ex plus .2ex}{\large\bf}}
+\def\subsubsection{\@startsection{subsubsection}{3}{\z@}
+         {3.25ex plus 1ex minus .2ex}{1.5ex plus .2ex}{\normalsize\bf}}
+\def\paragraph{\@startsection{paragraph}{4}{\z@}
+              {3.25ex plus 1ex minus .2ex}{-1em}{\normalsize\bf}}
+\def\subparagraph{\@startsection{subparagraph}{4}{\parindent}
+                 {3.25ex plus 1ex minus .2ex}{-1em}{\normalsize\bf}}
+
+
+%  \eqnarray change ＆で空く間隔を狭くする。
+\def\eqnarray{
+       \stepcounter{equation}
+       \let\@currentlabel=\theequation
+       \global\@eqnswtrue
+       \global\@eqcnt\z@
+       \tabskip\@centering
+       \let\\=\@eqncr
+       $$\halign to \displaywidth\bgroup\@eqnsel\hskip\@centering
+       $\displaystyle\tabskip\z@{##}$&\global\@eqcnt\@ne
+       \hfil$\displaystyle{{}##{}}$\hfil
+       &\global\@eqcnt\tw@$\displaystyle\tabskip\z@{##}$\hfil
+       \tabskip\@centering&\llap{##}\tabskip\z@\cr}
+%
+% 段落の頭で１文字分字下げ
+\parindent=1zw
+%
+
+
+%
+% タイトルに関すること
+% for master student
+\def\areyoumaster{0} % 修論なら1にする
+\def\isfinalstr{1}
+\def\isfinal#1{\def\isfinalstr{#1}}
+\newlength{\charlen}
+\if \areyoumaster 1
+   \def\doctitle{修 ~ 士 ~ 学 ~ 位 ~ 論 ~ 文}
+   \def\institutestr{
+ 京都大学大学院 工学研究科 \\
+ 機械理工学専攻}% 
+\else
+\def\doctitle{特 ~ 別 ~ 研 ~ 究 ~ 報 ~ 告}
+\def\institutestr{京都大学工学部物理工学科 \\（機械システム学コース）}
+\fi
+%
+%
+% title page items
+\def\debater#1{\def\debaterstr{#1}}
+%
+%\typeout{commands...}
+\def\title#1{\def\titlestr{#1}}
+
+\def\titlelong#1{\def\titlelongstr{#1}}
+%
+\def\author#1{\def\authorstr{#1}}
+%
+\def\supervisor#1{\def\supervisorstr{#1}}
+%
+\def\debater#1{\def\debaterstr{#1}}
+%
+\def\deadline#1{\def\deadlinestr{#1}
+%
+}
+
+\def\titlepage{
+       \newpage
+ \thispagestyle{empty}
+ \setcounter{page}{0}
+
+    \vspace*{10mm}
+
+		\newlength{\debaterwidth}
+		\settowidth{\debaterwidth}{\Large 討論者 \quad \debaterstr}
+		\begin{flushright}
+			\setlength{\fboxsep}{5pt} % 枠内の余白
+			\fbox{
+					\begin{minipage}{\dimexpr\debaterwidth+2\fboxsep+2\fboxrule\relax}
+							\centering
+							{\Large 討論者 \quad \debaterstr} % 討論者の名前
+					\end{minipage}
+			}
+		\end{flushright}
+    
+    \vspace{15mm}
+
+    \begin{center}
+      {\Huge\bf\doctitle}
+    \end{center}
+    \vspace{15mm}
+    
+    \begin{flushleft}
+        {\hspace{20mm}\Large 題　目}  %位置は調整
+    \end{flushleft}
+    
+    \begin{center}
+        {\Large\titlestr} \\ % タイトル
+    \end{center}
+
+    \vspace{15mm}
+
+    \settowidth{\charlen}{\Large{\supervisorstr}}
+    \begin{flushleft}
+      \begin{minipage}{\textwidth}
+        \centering
+        {\hspace{0.5\charlen}{\Large 指導教員} \quad 
+        \parbox[t]{\charlen}{\Large \supervisorstr}}
+      \end{minipage}
+    \end{flushleft}
+	
+    \vspace{15mm}
+   \begin{center}
+        {\Large\institutestr}
+   \end{center}
+
+    \vspace{10mm}
+
+    \settowidth{\charlen}{\Large{\deadlinestr}}
+   \begin{center}
+			\begin{minipage}{\textwidth}
+				\centering 
+				\hspace{\charlen}\parbox[t]{0.5\textwidth}{
+					{\Large 氏　　名 \quad \authorstr} \\[5mm]
+					{\Large 提出年月 \quad \deadlinestr}
+				}
+			\end{minipage}
+   \end{center}
+   \vspace*{\fill}
+}
+
+
+
+
+%目次はsubsectionまで
+\setcounter{tocdepth}{2}
+%
+% 時間を表示
+\newcount\curmin \newcount\hour \newcount\onehour \newcount\curhour
+\onehour=60
+\hour=\time
+\divide\hour by\onehour
+\curhour=\hour
+\multiply\hour by-\onehour
+\curmin=\time
+\advance\curmin by\hour
+\def\daytime{{\sf \number\month/\number\day\ 
+\number\curhour:\number\curmin}}
+
+% 目次の改良
+\def\tableofcontents{\section*{\hfil 目~~~~~~次\hfil}
+\@starttoc{toc}  %\addcontentsline{toc}{section}{目次}}
+\thispagestyle{empty}
+\setcounter{page}{0}
+}
+%\def\l@section#1#2{\addpenalty{\@secpenalty} \addvspace{0em plus 1pt}
+% \@tempdima 1.5em \begingroup
+% \parindent \z@ \rightskip \@pnumwidth 
+% \parfillskip -\@pnumwidth 
+% \bf \leavevmode \advance\leftskip\@tempdima \hskip -\leftskip 
+%#1\nobreak\hfil     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%変更
+% \nobreak\hbox to\@pnumwidth{\hss #2}\par 
+% \endgroup}
+
+% 付録作り
+\def\Appendix{
+\section*{\hfil 付~~~~~~録\hfil}
+ \setcounter{section}{0} %
+ \setcounter{subsection}{0} %
+\addcontentsline{toc}{section}{付録}
+\markboth{付録}{付録}
+ \def\thesection{\Alph{section}}
+ \def\thesubsection{\thesection.\arabic{subsection}}
+ \def\theequation{\thesection\arabic{equation}}%
+\renewcommand{\thetable}{A.\arabic{table}}  % 表の番号を A.1, A.2 に変更 % 図の番号も A.1, A.2 に変更
+\renewcommand{\fnum@table}{表~\thetable}  % 「表 A.1」のように表示 (修正済み)
+\renewcommand{\thefigure}{A.\arabic{figure}} 
+\renewcommand{\fnum@figure}{図~\thefigure} 
+%\def\thefigure{\thesection\arabic{figure}}%
+%\def\thetable{\thesection\arabic{table}}%
+\def\themanyeqn{\theequation.\alph{whichequation}}
+ \def\section{\@startsection {section}{1}{\z@}{3.5ex plus 1ex minus .2ex}
+              {2.3ex plus .2ex}{\Large\bf}}
+}
+
+\def\appendix#1{
+ \stepcounter{section}
+%\def\thesection{\arabic{section}}
+ \section*{\thesection \quad #1}
+\addcontentsline{toc}{subsection}{\numberline {\thesection}#1}
+\def\@currentlabel{{\bf 付録\thesection}}
+\setcounter{equation}{0}}
+
+\def\subappendix#1{
+ \stepcounter{subsection}
+ \subsection*{\thesubsection \quad #1}
+ \addcontentsline{toc}{subsection}{\numberline{\thesubsection}#1}
+ \def\@currentlabel{\thesubsection}
+}
+%
+% 参考文献
+\def\isjapanese{1} % 日本語なら1にする
+\def\thebibliography#1{
+ \clearpage % 新しいページを開始
+ \if \isjapanese 1
+   \section*{\hfil 参考文献\hfil}%
+   \addcontentsline{toc}{section}{参考文献}%
+   \markboth{参考文献}{参考文献}
+ \else
+   \section*{\hfil References\hfil}%
+   \markboth{References}{References} % \leftmark と \rightmark を明示的に更新
+   \addcontentsline{toc}{section}{References}%
+ \fi
+   \list {[\arabic{enumi}]}{\settowidth\labelwidth{[#1]}%
+ \leftmargin\labelwidth \advance\leftmargin\labelsep \usecounter{enumi}}%
+ \def\newblock{\hskip .11em plus .33em minus .07em}%
+ \sloppy \sfcode`\.=1000\relax
+ }
+ 
+ \let\endthebibliography=\endlist
+
+%Notation
+\def\Notation{
+\section*{\hfil 記~~~~~~号\hfil}
+\addcontentsline{toc}{section}{記号}}
+%
+%謝辞のページ
+\def\acknowledgment{
+\section*{\hfil 謝~~~~~~辞\hfil}
+\addcontentsline{toc}{section}{謝辞}
+\markboth{謝辞}{謝辞}}
+
+%
+%概要のページ
+\def\titleinabs#1{\def\titleinabsstr{#1}}
+\def\abstract{
+\clearpage
+\begin{center}
+ \titleinabsstr \\
+\end{center}
+\vspace*{2mm}
+\begin{center}
+\rule{\linewidth}{0.05mm}
+\end{center}
+
+{\def\section{\@startsection {section}{1}{\z@}
+    {3.5ex plus 1ex minus .2ex}{2.3ex plus .2ex}{\Large\bf}}
+\section*{\hfil 摘~~~~~~要\hfil}
+\addcontentsline{toc}{section}{摘要}}
+\thispagestyle{empty}
+\setcounter{page}{0}
+}
+% 図・表・数式番号はsection毎にする
+\@addtoreset{equation}{section}           
+\def\theequation{\thesection.\arabic{equation}}
+\@addtoreset{figure}{section}%
+\def\thefigure{\thesection.\arabic{figure}} %\ref{}した時の書式
+\def\fnum@figure{図\thesection.\arabic{figure}} %キャプション内の書式
+\@addtoreset{table}{section}%
+\def\thetable{\thesection.\arabic{table}} 
+\def\fnum@table{表\thesection.\arabic{table}}
+
+\newenvironment{proof}{\par (証明) \quad }{\hfill ■ \par\vspace{1zw}}
+
+\def\rf#1{{図 }\ref{#1}}
+\usepackage{subcaption}
+\def\rsf#1#2{{図 }\ref{#1}(\subref*{#1#2})}
+
+%theorem環境を作る
+\newcounter{theoryctr}[section]
+\newcounter{definitionctr}[section]
+\newcounter{remarkctr}[section]
+\newcounter{lemmactr}[section]
+\newcounter{coroctr}[section]
+\newcounter{propositionctr}[section]
+\newcounter{assumpctr}[section]
+\newcounter{housinctr}[section]
+\newcounter{propertyctr}[section]
+\newcounter{examplectr}[section]
+%
+\def\thetheoryctr{\thesection.\arabic{theoryctr}}
+\def\thedefinitionctr{\thesection.\arabic{definitionctr}}
+\def\theremarkctr{\thesection.\arabic{remarkctr}}
+\def\thelemmactr{\thesection.\arabic{lemmactr}}
+\def\thecoroctr{\thesection.\arabic{coroctr}}
+\def\thepropositionctr{\thesection.\arabic{propositionctr}}
+\def\theassumpctr{\thesection.\arabic{assumpctr}}
+\def\thehousinctr{\thesection.\arabic{housinctr}}
+\def\thepropertyctr{\thesection.\arabic{propertyctr}}
+%
+\def\theo{\stepcounter{theoryctr}\@ShowTheorem{定理}{\thetheoryctr}{}}
+\def\defi{\stepcounter{definitionctr}\def\theenumi{\roman{enumi}}\def\labelenumi{(\theenumi)}\@ShowTheorem{定義}{\thedefinitionctr}{の定義}}
+\def\remark{\stepcounter{remarkctr}\@ShowTheorem{注意}{\theremarkctr}{}}
+\def\lemm{\stepcounter{lemmactr}\@ShowTheorem{補題}{\thelemmactr}{}}
+\def\coro{\stepcounter{coroctr}\@ShowTheorem{系}{\thecoroctr}{}}
+\def\prop{\stepcounter{propositionctr}\@ShowTheorem{命題}{\thepropositionctr}{}}\def\pro{\stepcounter{propertyctr}\@ShowTheorem{性質}{\thepropertyctr}{}}
+\def\assumption{\stepcounter{assumpctr}\@ShowTheorem{仮定}{\theassumpctr}{}}
+\def\housin{\stepcounter{housinctr}\@ShowTheorem{方針}{\thehousinctr}{}}
+
+%
+\def\endtheo{\nopagebreak[4] \par \kern 2pt \hrule width \linewidth
+\kern 3pt \par\vspace{3mm}\pagebreak[2]} %終りの間隔
+\def\enddefi{\endtheo}
+\def\endremark{\endtheo}
+\def\endlemm{\endtheo}
+\def\endcoro{\endtheo}
+\def\endprop{\endtheo}
+\def\endpro{\endtheo}
+\def\endassumption{\endtheo}
+\def\endhousin{\endtheo}
+
+%
+\def\@ShowTheorem#1#2#3{\pagebreak[3]\@ifnextchar 
+[{\@tempswatrue\@ST@cite{#1}{#2}{#3}}{\@tempswafalse\@ST@nocite{#1}{#2}{#3}}}
+
+\def\@ST@cite#1#2#3[#4]{\@ifnextchar 
+({\@tempswatrue\@ST@citename{#1}{#2}{#3}{#4}}{\@tempswafalse\@ST@citenoname{#1}{#2}{#3}{#4}}}
+
+\def\@ST@citename#1#2#3#4(#5){\par\vspace{1zw}{\bf  ＜#1 #2\cite{#4}＞
+(#5)}\hrulefill\
+\par\nopagebreak[4] \def\@currentlabel{{\bf #1#2}}}
+\def\@ST@citenoname#1#2#3#4{\par\vspace{1zw}{\bf 【#1 #2\cite{#4}}】
+\hrulefill\
+\par\nopagebreak[4] \def\@currentlabel{{\bf #1#2}}}
+\def\@ST@nocite#1#2#3{\@ifnextchar 
+({\@tempswatrue\@ST@nocitename{#1}{#2}{#3}}{\@tempswafalse\@ST@nocitenoname{#1}{#2}{#3}}}
+
+\def\@ST@nocitename#1#2#3(#4){\par\vspace{1zw}{\bf ＜#1 #2＞
+(#4)}\hrulefill\
+\par\nopagebreak[4] \def\@currentlabel{{\bf #1#2}}}
+\def\@ST@nocitenoname#1#2#3{\par\vspace{1zw}{\bf 【#1 #2】}\hrulefill\
+\par\nopagebreak[4] \def\@currentlabel{{\bf #1#2}}}
+
+\def\bordermatrix#1{\begingroup \m@th
+ \setbox\z@\vbox{\def\cr{\crcr\noalign{\kern2\p@\global\let\cr\endline}}%
+   \ialign{$##$\hfil\kern2\p@\kern\p@renwd&\thinspace\hfil$##$\hfil
+     &&\quad\hfil$##$\hfil\crcr
+     \omit\strut\hfil\crcr\noalign{\kern-\baselineskip}%
+     #1\crcr\omit\strut\cr}}%
+ \setbox\tw@\vbox{\unvcopy\z@\global\setbox\@ne\lastbox}%
+ \setbox\tw@\hbox{\unhbox\@ne\unskip\global\setbox\@ne\lastbox}%
+ \setbox\tw@\hbox{$\kern\wd\@ne\kern-\p@renwd\left[\kern-\wd\@ne
+   \global\setbox\@ne\vbox{\box\@ne\kern2\p@}%
+   \vcenter{\kern-\ht\@ne\unvbox\z@\kern-\baselineskip}\,\right]$}%
+ \null\;\vbox{\kern\ht\@ne\box\tw@}\endgroup}
+
+ % Fancyhdr を用いたヘッダー設定
+\RequirePackage{fancyhdr} % パッケージの読み込み
+\pagestyle{fancy} % ヘッダー/フッターのスタイルを fancy に設定
+\fancyhf{} % 既存のヘッダー/フッターをクリア
+\fancyhead[L]{\nouppercase{\leftmark}} % 左側にセクション名を表示
+\fancyhead[R]{\bfseries{\thepage}} % 右側にページ番号を表示
+\renewcommand{\headrulewidth}{0.4pt} % ヘッダー下の線の太さ
+\AtBeginDocument{
+   \pagestyle{fancy}
+}

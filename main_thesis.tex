@@ -1,0 +1,94 @@
+\documentclass[11pt]{jarticle}
+
+% 数式
+\usepackage{amsmath,amssymb} 
+
+% 図
+\usepackage[dvipdfmx]{graphicx,color} 
+\usepackage{adjustbox}
+\usepackage{here}
+\usepackage{caption} 
+\captionsetup{format=hang, labelformat=simple, labelsep=period}
+\usepackage{subcaption}
+\usepackage{cleveref}  
+
+%表
+\usepackage{makecell} %セルを定義する
+
+%その他
+\usepackage{bm}
+\usepackage{url}
+\usepackage{siunitx}
+\sisetup{inter-unit-product=\ensuremath{{}\cdot{}}} % 単位間に "·" を入れる
+\usepackage{cite}
+\usepackage{comment}  %\begin{comment} と \end{comment} の間に記述した内容が全て無視される。
+%\includecomment{comment}でコメントブロック
+% \usepackage{slashbox}
+\usepackage{placeins}
+
+% 使う.styの指定
+% thesis_KU_platex.sty の中の、\def\areyoumaster{0} の値を卒論なら0、修論なら1にする
+\usepackage{thesis_platex}
+% \usepackage{researchmeeting_platex}
+
+% === 表紙 ===========================================================
+\isfinal{1}
+
+% === 文章情報 =======================================================
+\title{触覚とソフトフィンガーを備えた7自由度ロボットアームの模倣学習}
+\author{小森　文雄}
+\supervisor{細田 耕 教授\\
+            川節 拓実 講師}
+\debater{中西　弘明　講師}
+\deadline{令和8年2月}
+
+% 図表のキャプションを英語表記に変更
+\renewcommand{\figurename}{Fig}
+\renewcommand{\tablename}{Table}
+
+\begin{document}
+\setlength{\abovecaptionskip}{0mm}
+
+% === 表紙 ===========================================================
+\titlepage
+
+% === 摘要 ===========================================================
+\titleinabs{触覚とソフトフィンガーを備えた7自由度ロボットアームの模倣学習}
+\input{tex/abstract.tex}
+
+% === 目次 ===========================================================
+\newpage
+\tableofcontents
+
+% === 本文 ===========================================================
+\section{緒言}
+
+  \input{tex/introduction.tex}
+  
+\section{提案手法}
+
+  \input{tex/method.tex}
+
+\section{評価実験}
+
+  \input{tex/experimental.tex}
+
+\section{議論}
+
+\input{tex/discussion.tex}
+
+\section{結言}
+
+\input{tex/conclusion.tex}
+
+% === 謝辞 ===========================================================
+\input{tex/acknowledgements.tex}
+
+% === 参考文献 =======================================================
+\bibliographystyle{junsrt}
+\bibliography{bookmark}
+
+% === 付録 ===========================================================
+\input{tex/appendix.tex}
+
+\end{document}

@@ -1,0 +1,10 @@
+main_thesis.dvi
+main_thesis.log
+main_thesis.pdf
+*.aux
+*.toc
+*.blg
+*.bbl
+*.out
+*.synctex.gz
+

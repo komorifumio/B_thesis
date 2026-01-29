@@ -1,0 +1,39 @@
+% 数式の挿入
+% https://mathlandscape.com/latex-eq/
+
+% equation : 1行のみの別行立て
+\begin{equation}
+\label{}
+y = x
+\end{equation}
+
+% align : 複数行の数式. 
+  % 揃えたい場所の前に&. 奇数番目の&:位置合わせ,偶数番目:区切り
+  % \\は改行記号
+\begin{align}
+\label{}
+  y &= x \\
+  y &= 
+\end{align}
+
+% gather : 複数行&中央揃え
+\begin{gather}
+\label{}
+  A = a_1+a_2+a_3 \\ 
+  B = b_1+b_2 
+\end{gather}
+
+% multline : 1つの数式を複数行に
+\begin{multline}
+\label{}
+  a+b+c+d+e+f+g \\
+  +h+i+j+k+l+m+n+o \\
+  +p+q+r+s+t+u+v+w+x+y+z
+\end{multline}
+
+% 分数:分母が先
+\frac{a}{b} 
+
+% 積分
+\int f(x) dx \\
+\int_{b}^{a} f(x) dx

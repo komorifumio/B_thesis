@@ -1,0 +1,171 @@
+% 実験結果
+\subsection{触覚情報の有用性の検証}
+
+\begin{figure}[htbp]
+  \centering
+  \begin{minipage}[t]{0.69\textwidth}
+    \vspace{0pt}
+    \centering
+    \includegraphics[width=\linewidth]{tex/Image/experimentsetup.drawio.pdf}
+  \end{minipage}\hfill
+  \begin{minipage}[t]{0.31\textwidth}
+    \centering
+    \begin{minipage}[t]{\linewidth}
+      \vspace{0pt}
+      \centering
+      \includegraphics[width=\linewidth]{tex/Image/lateralview.pdf}
+      \caption*{CAM1}
+    \end{minipage}
+    \vspace{3mm}
+    \begin{minipage}[t]{\linewidth}
+      \centering
+      \includegraphics[width=\linewidth]{tex/Image/topview.pdf}
+      \caption*{CAM2}
+    \end{minipage}
+  \end{minipage}
+  \caption{Experimental setup for the object-grasping task (left), and example camera views (right): Camera 1 provides a lateral view and Camera 2 provides a top view. An occluding obstacle is placed to simulate bimanual occlusion so that the target object (a Kim towel) is not visible from the lateral viewpoint.}
+  \label{fig:experiment_setup_grasp}
+\end{figure}
+
+
+　本実験では，触覚情報の有用性を検証するために，触覚センサのデータを含んだ学習と含まない学習の2つの条件で，キムタオルを掴んで別の場所に離すタスクの成功率を比較した．ただし，将来的な双腕でのマニピュレーションを想定し，もう一方のアームによるオクルージョンを疑似的に作り出すため，アームの横からのカメラでキムタオルの高さを見ることができないような障害物を設置した．実験のセットアップをFig\ref{fig:experiment_setup_grasp}に示す．\par
+
+\subsubsection{タスクの教示，学習条件}
+教示データは，キムタオルをFig3.1においてある場所にある枚数置いておき，リーダーアームでその上から１枚だけとって紺色の障害物の左側に離す動作をテレオペレーションで行い収集した．この時，双腕を想定した障害物により横からのカメラではキムタオルの高さが見えない．\par
+キムタオルの高さは枚数を50枚，40枚，30枚，20枚，10枚の5段階でそれぞれ2回の教示データ，合計10回の教示データを収集した．教示データ収集時は，センサ値も取得しており，学習時は，その値を無視して学習するsensor\_off条件と，センサ値を使用して学習するsensor\_on条件の2つで学習を行った．\par
+学習の条件は，CPUにAMD Ryzen 9 9950X，GPUにNVIDIA GeForce RTX 5080，メモリ64GBを搭載したPCを使用した．OSはUbuntu 24.04.3 LTS（Kernel 6.14）を用いた．学習のbatch sizeは8，学習ステップ数は20000ステップとした．
+
+
+
+\subsubsection{タスクの評価と成功率}
+タスクの成否は，キムタオルを1枚だけ掴んで，障害物の左側のどこでもいいので移動させることができたら成功とした．ただし，掴み損ねて何度もつかみに行こうとした場合は失敗とした．
+検証時は教示時のキムタオルの枚数から増やしたものと減らした未知の枚数のものを用意し，全部で60枚，50枚，40枚，30枚，20枚，10枚，1枚の7段階でそれぞれ5回の試行を行い，成功率を算出した．\par
+以下にそれぞれの枚数のキムタオルの様子を示す．\par
+
+\begin{figure}[htbp]
+  \centering
+  \begin{minipage}[t]{0.13\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{tex/Image/1.pdf}
+    \caption*{1}
+  \end{minipage}\hfill
+  \begin{minipage}[t]{0.13\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{tex/Image/10.pdf}
+    \caption*{10}
+  \end{minipage}\hfill
+  \begin{minipage}[t]{0.13\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{tex/Image/20.pdf}
+    \caption*{20}
+  \end{minipage}\hfill
+  \begin{minipage}[t]{0.13\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{tex/Image/30.pdf}
+    \caption*{30}
+  \end{minipage}\hfill
+  \begin{minipage}[t]{0.13\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{tex/Image/40.pdf}
+    \caption*{40}
+  \end{minipage}\hfill
+  \begin{minipage}[t]{0.13\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{tex/Image/50.pdf}
+    \caption*{50}
+  \end{minipage}\hfill
+  \begin{minipage}[t]{0.13\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{tex/Image/60.pdf}
+    \caption*{60}
+  \end{minipage}
+  \caption{Representative images of the Kim towel at each sheet count (1, 10, 20, 30, 40, 50, 60).}
+  \label{fig:towel_counts}
+\end{figure}
+
+
+さらに，指先のソフトフィンガーの長さを教示時とは短くしたものでも評価を行った．1つ目は教示データと同じ状態，2つ目はそれよりも指の長さが30mm短い状態である．指の長さが長いものにすると，センサ値がない場合に指を強く押し付けすぎて危険なため30mm長いものは使用しなかった．\par
+
+\begin{figure}[htbp]
+  \centering
+  \begin{minipage}[t]{0.45\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{tex/Image/30mmfing.pdf}
+    \captionof{figure}{Fingers extended by 30mm (same as demonstration)}\label{fig:30mmfing}
+  \end{minipage}\hfill
+  \begin{minipage}[t]{0.45\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{tex/Image/0mmfing.pdf}
+    \captionof{figure}{Fingers extended by 0mm}\label{fig:0mmfing}
+  \end{minipage}
+\end{figure}
+
+以下の表に，各条件での成功率を示す．Table\ref{tab:success_rate_30mm}は指先を教示データと同じ長さにした場合，Table\ref{tab:success_rate_0mm}は指先を30mm短くした場合の成功率である．\par
+
+\begin{table}[htbp]
+\centering
+\begin{minipage}[t]{0.48\textwidth}
+  \centering
+  \captionof{table}{Success rate with fingers extended by 30mm (same as demonstration data)}
+  \label{tab:success_rate_30mm}
+  \begin{tabular}{|l|l|l|}
+  \hline
+  sheets & sensor\_on & sensor\_off \\ \hline
+  60     & 100.0(5/5) & 20.0(1/5)   \\ \hline
+  50     & 100.0(5/5) & 60.0(3/5)   \\ \hline
+  40     & 100.0(5/5) & 0.0(0/5)    \\ \hline
+  30     & 100.0(5/5) & 100.0(5/5)  \\ \hline
+  20     & 100.0(5/5) & 100.0(5/5)  \\ \hline
+  10     & 100.0(5/5) & 100.0(5/5)  \\ \hline
+  1      & 100.0(5/5) & 20.0(1/5)   \\ \hline
+  \end{tabular}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.48\textwidth}
+  \centering
+  \captionof{table}{Success rate with fingers extended by 0mm (different from demonstration data)}
+  \label{tab:success_rate_0mm}
+  \begin{tabular}{|l|l|l|}
+  \hline
+  sheets & sensor\_on  & sensor\_off \\ \hline
+  60     & 100.0(5/5) & 100.0(5/5) \\ \hline
+  50     & 100.0(5/5) & 80.0(4/5) \\ \hline
+  40     & 100.0(5/5) & 100.0(5/5) \\ \hline
+  30     & 100.0(5/5) & 100.0(5/5) \\ \hline
+  20     & 80.0(4/5)  & 0.0(0/5)  \\ \hline
+  10     & 100.0(5/5) & 0.0(0/5)   \\ \hline
+  1      & 0.0(0/5)   & 0.0(0/5)   \\ \hline
+  \end{tabular}
+\end{minipage}
+\end{table}
+
+
+
+
+\newpage
+\subsection{重力補償がなければできない折り紙タスク}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.9\textwidth]{tex/Image/experiment_setup.drawio.pdf}
+  \caption{Experiment setup (layout, observation cameras, and equipment configuration)}
+  \label{fig:experiment_setup}
+\end{figure}
+
+
+　重力補償がなければできないタスクとして，折り紙１枚をソフトフィンガーでつかみ，折り曲げるタスクを行った．ロボットアーム１台で折り紙を折る動作を行うため，折り紙の左端は２点で固定する治具をつけ，折りたたんだ際にも人間がその２点にたたむ紙を刺すという補助を行った．この補助をするためには，操作者が一旦ロボットアームから手を離して折り紙をジグに刺す必要があるため，人間が2人以上いない限りは重力補償制御が不可欠である．\par
+
+
+\subsubsection{タスクの教示，学習条件}
+ポリシーは計10回のエピソードを取り，治具の位置は変えずにまず人間がだいたい紙の左上に２点刺すようにセッティングした．そのため，紙の位置は毎回微妙にずれている．
+各エピソードで，操作者はリーダーアームを操作して折り紙を折り，一旦折ったらその状態でアームを重力補償下で固定し，紙を治具の2点に刺すという補助を行い，折り目をつける段階へと移行した．\par
+
+
+学習の条件は，CPUにAMD Ryzen 9 9950X，GPUにNVIDIA GeForce RTX 5080，メモリ64GBを搭載したPCを使用した．OSはUbuntu 24.04.3 LTS（Kernel 6.14）を用いた．学習のbatch sizeは8，学習ステップ数は20000ステップとした．
+
+
+また，センサ値は生データをそのまま使用すると，温度変化によって異なる値を示すため，キャリブレーションを行った．具体的には，各試行の開始時に5秒間静止した状態でセンサ値を取得し，その平均値を基準として各時刻のセンサ値から引き算することで，実験を行う日程や時間帯の変化による温度変化の影響を抑制した．\par
+
+\subsubsection{タスクの評価と成功率}
+　折り紙を他に折り目をつけずに教示時と同じ向きに折りたたむことができ，折り紙を自然にしたときに折り目が開かなければ成功とした．10回の試行を行い，9回成功し，成功率は90\%であった．
+\par
+ここで，重力補償がなければそもそも教示ができないため，成功率は0\%であるといえる．\par

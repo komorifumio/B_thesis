@@ -1,0 +1,22 @@
+[
+    {
+        "key": "ctrl+alt+shift+p",
+        "command": "latex-workshop.recipes",
+        "when": "editorLangId == latex"
+    },
+    {
+        "key": "ctrl+alt+p",
+        "command": "latex-workshop.recipes",
+        "when": "editorLangId == latex"
+    },
+    {
+        "key": "ctrl+alt+k",
+        "command": "latex-workshop.kill",
+        "when": "editorLangId == 'latex'"
+    },
+    {
+        "key": "ctrl+l ctrl+o",
+        "command": "latex-workshop.compilerlog",
+        "when": "workbench.panel.output.active && editorLangId == 'latex'"
+    }
+]

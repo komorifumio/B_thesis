@@ -1,0 +1,143 @@
+% !TeX program = latexmk
+% !TeX option = -pdfdvi
+% !TeX encoding = UTF-8
+\documentclass[11pt]{jarticle}
+
+% 数式
+\usepackage{amsmath,amssymb} 
+
+% 図
+\usepackage[dvipdfmx]{graphicx,color} 
+\usepackage{adjustbox}
+\usepackage{here}
+\usepackage{caption} 
+\captionsetup{format=hang, labelformat=simple, labelsep=period}
+\usepackage{subcaption}
+\usepackage{cleveref}  
+
+%表
+\usepackage{makecell} %セルを定義する
+
+%その他
+\usepackage{bm}
+\usepackage{url}
+\usepackage{siunitx}
+\sisetup{inter-unit-product=\ensuremath{{}\cdot{}}} % 単位間に "·" を入れる
+\usepackage{cite}
+\usepackage{comment}  %\begin{comment} と \end{comment} の間に記述した内容が全て無視される。
+%\includecomment{comment}でコメントブロック
+% \usepackage{slashbox}
+\usepackage{placeins}
+
+% 使う.styの指定
+% thesis_KU_platex.sty の中の、\def\areyoumaster{0} の値を卒論なら0、修論なら1にする
+\usepackage{thesis_platex}
+% \usepackage{researchmeeting_platex}
+
+% === 表紙 ===========================================================
+\isfinal{1}
+
+% === 文章情報 =======================================================
+\title{重力補償を適用した7自由度ロボットアームと触覚を用いた模倣学習}
+\author{小森　文雄}
+\supervisor{細田 耕 教授\\
+            川節 拓実 講師}
+\debater{京大 次郎}
+\deadline{令和N年2月}
+
+\begin{document}
+\setlength{\abovecaptionskip}{0mm}
+
+% === 表紙 ===========================================================
+\titlepage
+
+% === 摘要 ===========================================================
+\titleinabs{タイトル}
+\input{tex/abstract.tex}
+
+% === 目次 ===========================================================
+\newpage
+\tableofcontents
+
+% === 本文 ===========================================================
+\section{緒言}
+　7自由度という高い冗長性を持つロボットアームは，多様な姿勢で作業空間の多くの点に到達できるため，人間のような柔軟な物体操作を実現する上で有用である．また，繊細な物体操作や未知の環境下での作業には，精密な触覚フィードバックや力覚制御が不可欠である．近年，
+  \input{tex/introduction.tex}
+  cite test \cite{example}.
+
+\section{過去の研究}
+
+
+
+  \input{tex/survey.tex}
+
+\section{提案手法}
+
+\subsection{実験システム}
+
+
+図１　模倣学習のためのロボットシステムの構成図
+
+
+1 重力補償を適用したテレオペレーションによるデータ収集
+
+本研究では，リーダー・フォロワー方式のテレオペレーションシステムとして，RT社製の7自由度ロボットアームCRANE-X7を2台使用する．マニピュレータの自由度は7自由度，グリッパの自由度は1自由度であり，全体として8自由度のロボットを使用した．1台をリーダーアームとして操作者が操作し，もう1台をフォロワーアームとして物体操作を行う．フォロワーアームのグリッパにはソフトフィンガーを取り付け，リーダーアームの動きに追従し物体操作を実行する．ソフトウェア構成としては，Hugging Faceが提供する模倣学習ライブラリであるlerobotを用いたPython環境をベースとしている．\par
+　リーダーアームの操作時，本体重量約1.8kgのCRANE-X7は操作者に負担をかけるため，テレオペレーション時のリーダーアームには重力補償制御を適用する．重力補償制御では，ロボットアームの現在関節位置から各関節に作用する重力トルクを計算し，その逆方向のトルクを各関節に印加することで，アームの重量を打ち消す．lerobotはデータ収集から学習までを統一的に扱える優れたフレームワークであるが，重力補償機能はPython実装では制御周期の安定性やリアルタイム性に課題があった．そこで本研究では，RT社の提供するC++ライブラリをpybibd11を用いてlerobotのPython環境に組み込む実装を行った．これにより，最新の学習フレームワークの恩恵を受けつつ，C++による滑らかで高応答な重力補償制御を両立させている．結果として，操作者はリーダーアームの質量を感じることなく，直感的な教示動作を行うことが可能になった．
+
+
+2 ソフトロボットフィンガー
+　フォロワーアームのハンド部分には，柔軟な把持と接触検知を実現するためにソフトフィンガーを装着する．このフィンガー内部には，導電性のイオン液体を封入した流路を持つ
+
+
+3 ACTによる模倣学習
+
+
+
+  \input{tex/method.tex}
+
+\section{実験結果}
+  \input{tex/experimental.tex}
+
+\section{考察}
+  \input{tex/discussion.tex}
+
+\section{結言}
+  \input{tex/conclusion.tex}
+    
+% === 謝辞 ===========================================================
+\input{tex/acknowledgements.tex}
+
+% === 参考文献 =======================================================
+\bibliographystyle{junsrt}
+\bibliography{bookmark}
+
+% === 付録 ===========================================================
+\input{tex/appendix.tex}
+
+\section{重力補償トルクの算出}
+
+本実装では、再帰的ニュートン・オイラー法（RNE）を用いて、各関節に必要な重力補償トルクを算出する。
+リンク $i$ の質量を $m_i$、リンク座標系における重心位置ベクトルを $\boldsymbol{c}_i$、親リンク $i-1$ からの回転行列を ${}^i\boldsymbol{R}_{i-1}$ とする。
+
+まず、ベースリンク（$i=0$）に対して重力加速度 $\boldsymbol{g}$ と逆向きの仮想的な加速度 $\ddot{\boldsymbol{p}}_0 = -\boldsymbol{g} = [0, 0, 9.8]^T \, \mathrm{m/s^2}$ を与える。
+根本から手先に向かって、各リンクの並進加速度 $\ddot{\boldsymbol{p}}_i$ および重力による慣性力 $\hat{\boldsymbol{f}}_i$ を次式で伝播させる。
+\begin{align}
+    \ddot{\boldsymbol{p}}_i &= {}^i\boldsymbol{R}_{i-1} \ddot{\boldsymbol{p}}_{i-1} \\
+    \hat{\boldsymbol{f}}_i &= m_i \ddot{\boldsymbol{p}}_i
+\end{align}
+
+次に、手先から根本に向かって、リンク間に作用する力 $\boldsymbol{f}_i$ とモーメント $\boldsymbol{n}_i$ の釣り合いを計算する。
+手先負荷がない場合、末端条件は $\boldsymbol{f}_{N+1} = \boldsymbol{0}, \boldsymbol{n}_{N+1} = \boldsymbol{0}$ とする。
+\begin{align}
+    \boldsymbol{f}_i &= {}^i\boldsymbol{R}_{i+1} \boldsymbol{f}_{i+1} + \hat{\boldsymbol{f}}_i \\
+    \boldsymbol{n}_i &= {}^i\boldsymbol{R}_{i+1} \boldsymbol{n}_{i+1} + ({}^i\boldsymbol{p}_{i+1} \times {}^i\boldsymbol{R}_{i+1} \boldsymbol{f}_{i+1}) + (\boldsymbol{c}_i \times \hat{\boldsymbol{f}}_i)
+\end{align}
+ここで、${}^i\boldsymbol{p}_{i+1}$ はリンク $i$ 原点から子リンク $i+1$ 原点への位置ベクトルである。
+
+最終的に、関節 $i$ の駆動軸ベクトル $\boldsymbol{a}_i$ 成分を取り出すことで、必要な補償トルク $\tau_i$ が得られる。
+\begin{equation}
+    \tau_i = \boldsymbol{a}_i^T \boldsymbol{n}_i
+\end{equation}\par
+このトルクを電流値へと変換し各関節のモータに与えることで，重力補償制御を実現している．トルクから電流値への変換係数は，実機に合わせて調整を行った．
+\end{document}
+

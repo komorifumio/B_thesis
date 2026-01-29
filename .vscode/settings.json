@@ -1,0 +1,123 @@
+{   
+    "latex-workshop.latex.tools": [
+        {
+        "name": "latexmk (pdfdvi)",
+        "command": "latexmk",
+        "args": [
+            "-pdfdvi",
+            "-synctex=1",
+            "-interaction=nonstopmode",
+            "-file-line-error",
+            "%DOC%"
+        ]
+        },
+        {  
+        "name": "show-pdf",  
+        "command": "powershell",  
+        "args": [  
+            "-NoProfile",
+            "-Command",  
+            "Start-Process",  
+            "-FilePath",  
+            "C:\\Users\\tarak\\AppData\\Local\\SumatraPDF\\SumatraPDF.exe",  
+            "-ArgumentList",  
+            "%DOCFILE%.pdf"  
+            ]  
+        },
+        {
+        "name": "open-pdf-default",
+        "command": "powershell",
+        "args": ["-NoProfile","-Command","Invoke-Item","%DOCFILE%.pdf"]
+        }
+    ],
+
+    "latex-workshop.latex.recipes": [
+        {
+        "name": "latexmk (pdfdvi)",
+        "tools": [
+            "latexmk (pdfdvi)"
+        ]
+        }
+        // wslを使用しない人は以上のレシピ部分を削除し，以下のコメントアウトを外す
+        // {
+        // "name": "ptex2pdf_first",
+        // "tools": [
+        //     "ptex2pdf_win",
+        //     "pbibtex",
+        //     "ptex2pdf_win",
+        //     "ptex2pdf_win",
+        //     "show-pdf"
+        // ]
+        // },
+        // {
+        // "name": "ptex2pdf",
+        // "tools": [
+        //     "ptex2pdf_win",
+        //     "ptex2pdf_win",
+        //     "show-pdf"
+        //     ]
+        // }
+    ],
+    "latex-workshop.latex.recipe.default": "latexmk (pdfdvi)",
+    "latex-workshop.latex.autoBuild.run": "never",
+    
+    // 自動ビルドを無効化
+    "latex-workshop.latex.autoBuild.run": "never",
+    "files.encoding": "utf8",
+    
+    "latex-workshop.latex.autoClean.run": "onBuilt",
+    "latex-workshop.latex.clean.method": "glob",
+
+    // 不要ファイルの自動削除
+    "latex-workshop.latex.clean.fileTypes": [
+    "*.aux", "*.bbl", "*.blg", "*.idx", "*.ind", "*.lof", "*.lot",
+    "*.out", "*.toc", "*.acn", "*.acr", "*.alg", "*.glg", "*.glo",
+    "*.gls", "*.fls", "*.fdb_latexmk", "*.snm", "*.nav", "*.synctex.gz", "*.xdv",
+    "!*.log"
+    ],
+    
+    // Magic Comments のビルド設定
+    "latex-workshop.latex.magic.args": [
+    "-f", "-pv", "-synctex=1", "-interaction=nonstopmode", "-file-line-error", "%DOC%", "%OUTDIR%"
+    ],
+
+    // タブ幅の設定
+    "[tex]": {
+    "editor.tabSize": 2,
+    "editor.suggest.snippetsPreventQuickSuggestions": false
+    },
+    "[bibtex]": {
+    "editor.tabSize": 2
+    },
+    "[latex]": {
+        "editor.formatOnPaste": false,
+        "editor.fontFamily": "Consolas, Meiryo UI, メイリオ,  Segoe UI, 'Courier New', monospace",
+        "editor.wordWrap": "wordWrapColumn",
+        "editor.wordWrapColumn": 100,
+        "editor.fontWeight": 120,
+        "editor.minimap.enabled": false,
+        "editor.wordSeparators": "./\\()\"'-:,.;<>~!#$%^&*|+=[]{}`~?．。，、（）「」［］｛｝《》てにをはがのともへでや",
+        "editor.suggestSelection": "recentlyUsedByPrefix",
+        "editor.suggest.snippetsPreventQuickSuggestions": false,
+        "editor.quickSuggestions": {
+            "other": true,
+            "comments": false,
+            "strings": false
+        },
+        "editor.glyphMargin": false,
+        "editor.folding": true,
+        "editor.defaultFormatter": "James-Yu.latex-workshop"
+    },
+    "markdown.extension.preview.autoShowPreviewToSide": false,
+    "markdown-preview-enhanced.automaticallyShowPreviewOfMarkdownBeingEdited":false,
+
+      // IntelliSense を有効化
+    "latex-workshop.intellisense.package.enabled": true,
+    "latex-workshop.intellisense.citation.backend": "bibtex",
+    "latex-workshop.intellisense.citation.label": "bibtex key",
+    "editor.fontSize": 17,
+    "editor.unicodeHighlight.allowedCharacters": {
+        "，": true,
+        "．": true
+    }
+}

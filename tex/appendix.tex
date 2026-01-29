@@ -1,0 +1,110 @@
+\Appendix
+% 付録
+7自由度ロボットの仕様\par
+
+型番: RT-CRANE-X7\par
+作業有効範囲: 500mm\par
+可搬重量: 約0.5kg\par
+自由度: 7\par
+エンドエフェクタ: 両開きハンド１\par
+サイズ: 130×100×708(mm)　(設置用固定金属5mm含む)\par
+重量: 約1.5kg\par
+通信: 内部はRS485通信\par
+内蔵モータ: ROBOTIS製XM540-W270-R,XM430-W350-R 搭載\par
+電源: 12V10A 120W給電\par
+筐体ボディ: 3Dプリンタ仕上げ\par
+
+使用したRGBカメラ\par
+EMEET SmartCam C960　２台\par
+
+今回のcranex7のleaderarmの重力補償のモータごとのトルク電流比のキャリブレーション値を以下に示す．
+ただし，ベース部分の関節であるID2，グリッパ部分のID8，ID9については重力補償制御を適用していないため省略する．
+\begin{verbatim}
+ID3: torque_to_current = 0.2267
+ID4: torque_to_current = 0.3245
+ID5: torque_to_current = 0.3035
+ID6: torque_to_current = 0.2545
+ID7: torque_to_current = 0.1515
+Compensation gain: 0.4
+Current limit: 350.0mA
+\end{verbatim}
+
+
+
+
+
+
+
+\subsection{折り紙タスクの実験時のスクリーンショット（時間順）}
+\begin{figure}[htbp]
+  \centering
+  % Top row: 4 screenshots
+  \begin{subfigure}[t]{0.24\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{tex/Image/screenshot_18-30-30.pdf}
+    \caption{\#1}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.24\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{tex/Image/screenshot_18-30-38.pdf}
+    \caption{\#2}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.24\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{tex/Image/screenshot_18-30-47.pdf}
+    \caption{\#3}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.24\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{tex/Image/screenshot_18-30-55.pdf}
+    \caption{\#4}
+  \end{subfigure}
+
+  \vspace{2mm}
+
+  % Bottom row: 3 screenshots
+  \begin{subfigure}[t]{0.32\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{tex/Image/screenshot_18-31-33.pdf}
+    \caption{\#5}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.32\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{tex/Image/screenshot_18-31-42.pdf}
+    \caption{\#6}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.32\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{tex/Image/screenshot_18-31-55.pdf}
+    \caption{\#7}
+  \end{subfigure}
+
+  \caption{Sequence of screenshots captured during the experiment (time order).}
+  \label{fig:screenshots_timeorder}
+\end{figure}
+
+
+% 特徴抽出と埋め込み
+% 本システムには，RGBカメラ画像、ロボットの関節角度、および指先触覚センサの値が入力される。Transformerは内部計算において、全ての入力データが同一の次元（ベクトル長）を持つことを前提とするため、各モダリティ（情報の種類）に対して以下の前処理を行い、共通の次元 $d_{model}$ を持つ「トークン（特徴ベクトル）」へ変換する。\par
+
+% 画像情報のエンコード: 複数のカメラから得られたRGB画像は、学習済みの畳み込みニューラルネットワーク（CNN）である ResNet18 等に入力される。CNN は画像からエッジやテクスチャなどの空間的な特徴を抽出する。得られた特徴マップは平坦化（Flatten）された後、線形層（Linear layer）を介して次元 $d_{model}$ へと射影される。\par
+
+% 状態情報のエンコード: 関節角度や触覚センサの値といった低次元の物理量は、多層パーセプトロン（MLP）等の線形層によって、同様に次元 $d_{model}$ へと射影される。これにより、画像のような高次元データと、センサ値のような低次元データを同一の特徴空間で扱うことが可能となる。\par
+
+% 位置埋め込み（Positional Embedding）: Transformer 自体はデータの入力順序を認識できない構造であるため、各トークンに対して系列内の位置情報を表すベクトル（位置埋め込み）を加算する。これにより、モデルは「どのデータが何番目の時刻のものか」を区別できるようになる。\par
+
+% 学習フェーズ
+% 学習時の目的は、与えられた状況（観測）に対してエキスパート（人間）がどのような意図やスタイルで動作したかをモデルに学習させることである。学習時には CVAE エンコーダへ現在の観測と教師データである未来のアクション系列を入力する。\par
+
+% [CLS] トークンによる情報の集約: CVAE エンコーダには、入力系列の先頭に [CLS]（Classification Token）と呼ばれる特殊な学習可能トークンを付加する。Transformer の自己注意機構により各トークンは互いの情報を参照し合うが、[CLS] トークンは系列全体の情報を自身に集約するよう学習され、結果として [CLS] トークンは「この観測状況においてどのようなアクションが行われたか」というエピソード全体の特徴（スタイル）を圧縮した表現となる。\par
+
+% 潜在変数 $z$ の生成: エンコーダの出力から [CLS] トークンに対応するベクトルを抽出し、これを線形層で変換して平均 $\\mu$ と分散 $\\sigma$ を算出する。これらをパラメータとする正規分布から潜在変数 $z$ をサンプリングする。この $z$ は，各状況における動作の「確率的変動要素（例：速度やスタイルの違い）」を表現する。\par
+
+% 推論フェーズ
+% 推論時および学習時の再構成では、Transformer のエンコーダ・デコーダ構造を用いて、観測データと潜在変数 $z$ から未来のアクションを予測する。\par
+
+% 観測データの統合（Encoder）: 現在の観測データ（画像・関節・触覚）と CVAE から得られた潜在変数 $z$ を結合し、Transformer エンコーダに入力する。ここで Self-Attention により、例えば「画像内の物体の位置」と「現在の腕の角度」の関係性を紐付けるようなモダリティ間の統合処理が行われる。\par
+
+% アクション系列の生成（Decoder）: Transformer デコーダにおけるクエリとして、予測したい未来のステップ数に対応する固定位置埋め込み（Fixed Position Embeddings）を与える。デコーダは Cross-Attention を用いてエンコーダからの情報（Key/Value）を参照しながら各タイムステップのアクション値を算出することで、現在から未来 $k$ ステップ分のアクション系列を一括して出力する。\par
+
+% このように、[CLS] トークンを用いた情報の圧縮（CVAE）と Attention 機構によるマルチモーダル情報の統合（Transformer）を組み合わせることで、視覚・固有感覚・触覚を高度に融合したロバストな動作生成が可能となる。

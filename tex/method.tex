@@ -1,0 +1,121 @@
+% 提案手法
+\subsection{模倣学習のためのロボットシステム}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=1.0\textwidth]{tex/Image/imitationlearningsystem2.drawio.pdf}
+  \caption{Overview of the proposed imitation learning system using a teleoperation setup and haptic information}
+  \label{fig:robot_system}
+\end{figure}
+本章では，提案する重力補償を適用したテレオペレーションシステムと，模倣学習手法について述べる．Fig\ref{fig:robot_system}にシステムの構成図を示す．本システムは，リーダー・フォロワー構成のロボットアーム，フォロワーアーム先端についている２つのイオン液体センサを内蔵したソフトフィンガー，フォロワーアームを上からと横から観測するカメラ２台，およびこれらを制御・学習するためのPCから構成される．テレオペレーションによる教示データ収集時には，操作者がリーダーアームを操作し，フォロワーアームで物体操作を行う．収集した教示データを用いて，模倣学習によりフォロワーアームの動作モデルを学習する．学習モデルの入力として，カメラ画像，フォロワーアームの関節角度，およびソフトフィンガーからの触覚情報を用いる．学習後は，フォロワーアームが自律的に物体操作タスクを実行する．以下に，各構成要素について詳細に述べる．\par
+
+\subsection{操作性に優れたリーダーアーム}
+
+
+\subsubsection{リーダーアームのグリッパ設計}
+　リーダーアームのグリッパは直感的に操作しやすいように，手のひらで握る用の棒状の把手と，人差し指と親指を差し込むための穴を設けた．これにより，手のひら全体でグリッパを保持しつつ，指先で細かい開閉操作を行うことが可能になる．
+
+\begin{center}
+  \begin{minipage}{0.48\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{tex/Image/openleadergripper.drawio.pdf}
+    \captionof{figure}{Gripper in open state}
+    \label{fig:opened_leadergripper}
+  \end{minipage}\hfill
+  \begin{minipage}{0.48\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{tex/Image/closedleadergripper.pdf}
+    \captionof{figure}{Gripper in closed state}
+    \label{fig:closed_leadergripper}
+  \end{minipage}
+\end{center}
+
+また，グリッパを握ると自然とちょうど人間の前腕とリーダーアームの前腕リンクがFig2.4のように対応する．これにより操作者は自分の腕を動かす感覚でリーダーアームを操作できる．
+
+\begin{center}
+  \begin{minipage}{0.48\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{tex/Image/leaderarmwithme.drawio.pdf}
+    \captionof{figure}{Leader arm with operator (overview)}
+    \label{fig:leader_arm_with_me}
+  \end{minipage}\hfill
+  \begin{minipage}{0.48\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{tex/Image/leadergripperwithme.pdf}
+    \captionof{figure}{Leader gripper held by operator}
+    \label{fig:leader_gripper_with_me}
+  \end{minipage}
+\end{center}
+
+
+\newpage
+\subsubsection{リーダアームに重力補償を適用したテレオペレーションによるデータ収集}
+
+本研究では，リーダー・フォロワー方式のテレオペレーションシステムとして，RT社製の7自由度ロボットアームCRANE-X7を2台使用する．マニピュレータの自由度は7自由度，グリッパの自由度は1自由度であり，全体として8自由度のロボットを使用した．1台をリーダーアームとして操作者が操作し，もう1台をフォロワーアームとして物体操作を行う．フォロワーアームのグリッパにはソフトフィンガーを取り付け，リーダーアームの動きに追従し物体操作を実行する．ソフトウェアは，Hugging Faceが提供する模倣学習ライブラリであるlerobotを用いたPython環境をベースとしている．\par
+　リーダーアームの操作時，CRANE-X7の重量は操作者に負担をかけるため，テレオペレーション時のリーダーアームには重力補償制御を適用する．
+重力補償制御では，ロボットアームの現在関節位置から各関節に作用する重力トルクを計算し，その逆方向のトルクを各関節に加えることで，アームの重量を打ち消す．lerobotはデータ収集から学習，評価までを統一的に扱える優れたフレームワークであるが，重力補償機能はPython実装では制御周期の安定性やリアルタイム性に課題があった．そこで本研究では，RT社の提供するCRANE-X7の重力補償のC++ライブラリをpybibd11を用いてlerobotのPython環境に組み込む実装を行った．これにより，最新の学習フレームワークの恩恵を受けつつ，C++による滑らかで高応答な重力補償制御を両立させている．結果として，操作者はリーダーアームの質量を感じることなく，直感的な教示動作を行うことが可能になった．
+
+\subsubsection{重力補償トルクの算出}
+
+本実装では，再帰的ニュートン・オイラー法を用いて，各関節に必要な重力補償トルクを算出した．
+リンク $i$ の質量を $m_i$，リンク座標系における重心位置ベクトルを $\boldsymbol{c}_i$，親リンク $i-1$ からの回転行列を ${}^i\boldsymbol{R}_{i-1}$ とする．
+
+まず，ベースリンク（$i=0$）に対して重力加速度 $\boldsymbol{g}$ と逆向きの仮想的な加速度 $\ddot{\boldsymbol{p}}_0 = -\boldsymbol{g} = [0, 0, 9.8]^T \, \mathrm{m/s^2}$ を与える．
+根本から手先に向かって，各リンクの並進加速度 $\ddot{\boldsymbol{p}}_i$ および重力による慣性力 $\hat{\boldsymbol{f}}_i$ を次式で伝播させる．
+\begin{align}
+    \ddot{\boldsymbol{p}}_i &= {}^i\boldsymbol{R}_{i-1} \ddot{\boldsymbol{p}}_{i-1} \\
+    \hat{\boldsymbol{f}}_i &= m_i \ddot{\boldsymbol{p}}_i
+\end{align}
+
+次に，手先から根本に向かって，リンク間に作用する力 $\boldsymbol{f}_i$ とモーメント $\boldsymbol{n}_i$ のつり合いを計算する．
+手先負荷がない場合，末端条件は $\boldsymbol{f}_{N+1} = \boldsymbol{0}, \boldsymbol{n}_{N+1} = \boldsymbol{0}$ とする．
+\begin{align}
+    \boldsymbol{f}_i &= {}^i\boldsymbol{R}_{i+1} \boldsymbol{f}_{i+1} + \hat{\boldsymbol{f}}_i \\
+    \boldsymbol{n}_i &= {}^i\boldsymbol{R}_{i+1} \boldsymbol{n}_{i+1} + ({}^i\boldsymbol{p}_{i+1} \times {}^i\boldsymbol{R}_{i+1} \boldsymbol{f}_{i+1}) + (\boldsymbol{c}_i \times \hat{\boldsymbol{f}}_i)
+\end{align}
+ここで，${}^i\boldsymbol{p}_{i+1}$ はリンク $i$ 原点から子リンク $i+1$ 原点への位置ベクトルである．
+
+最終的に，関節 $i$ の駆動軸ベクトル $\boldsymbol{a}_i$ 成分を取り出すことで，必要な補償トルク $\tau_i$ が得られる．
+\begin{equation}
+    \tau_i = \boldsymbol{a}_i^T \boldsymbol{n}_i
+\end{equation}\par
+このトルクを電流値へと変換し各関節のモータに与えることで，重力補償制御を実現している．トルクから電流値への変換係数は，実機に合わせて調整を行った．
+
+
+\newpage
+\subsection{触覚を統合した模倣学習}
+\subsubsection{触覚センサを内蔵したソフトロボットフィンガー}
+　フォロワーアームのハンド部分には，柔軟な把持と接触検知を実現するためにソフトフィンガーを装着する．このフィンガーは柔らかいシリコンゴムの本体と，PLAの爪部分でできており，内部にはイオン液体を封入した流路を持つ触覚センサが埋め込まれている．
+センサ素子として用いるイオン液体は導電性を有するほか，不揮発性や難燃性，高い熱安定性といった物理的特性を持つ\cite{armandIonicliquidMaterialsElectrochemical2009}．
+この液体を柔軟な流路内に封入することで，対象物への接触により流路が変形し，その断面積 $A$ や長さ $L$ が変化する．
+この幾何学的な変化は，イオン液体固有の電気抵抗率 $\rho$ を用いて以下の式(\ref{eq:resistance})で表される抵抗値 $R$ の変化として検出される\cite{chossatSoftStrainSensor2013}．
+
+\begin{equation}
+  R = \rho \frac{L}{A}
+  \label{eq:resistance}
+\end{equation}
+
+なお，本実験ではイオン液体として1-Butyl-3-methylimidazolium Bis(fluorosulfonyl)imide（関東化学株式会社製）を使用した．ただし，このイオン液体は温度によって抵抗値が多少変化するため，データ収集時と，モデルの評価時に毎回キャリブレーションを行った．
+
+
+\subsubsection{ACTによる模倣学習}
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=1.1\textwidth]{tex/Image/ACT.drawio.pdf}
+  \caption{Action Chunking with Transformers (ACT) architecture used for imitation learning．This model extends the conventional ACT framework by introducing distinct sensor embeddings．}
+  \label{fig:act}
+\end{figure}
+
+本研究では，7自由度ロボットアームで接触を伴う複雑なタスクを学習するためにAction Chunking with Transformers (ACT) \cite{zhaoLearningFineGrainedBimanual2023}を基盤としたアーキテクチャを採用する．ACTはConditional Variational Autoencoder(CVAE)とTransformerを組み合わせたモデルであり，現在の観測から単一の行動ではなく，未来の数ステップ分のアクション系列（Action Chunk）を一括して予測することで，時系列データの長期的な依存関係を学習することに長けており，滑らかな動作生成が実現できる．\par
+従来のACTに本アーキテクチャではセンサ値を新たなモダリティとして導入している点が特徴である．具体的には，関節角度と同様にセンサ値をトークン化し，CVAEエンコーダーおよびデコーダーの両方に対して，画像特徴量や関節情報と並列に入力することで，センサ情報を統合した動作生成を可能にしている．
+
+
+
+
+
+
+
+
+
+
+
