@@ -55,196 +55,33 @@
 %     \end{tabular}
 % \end{table}
 
-学習の条件は，CPUにAMD Ryzen 9 9950X，GPUにNVIDIA GeForce RTX 5080，メモリ64GBを搭載したPCを使用した．OSはUbuntu 24.04.3 LTS（Kernel 6.14）を用いた．学習のbatch sizeは8，学習ステップ数は20000ステップとした．
+% 学習の条件は，CPUにAMD Ryzen 9 9950X，GPUにNVIDIA GeForce RTX 5080，メモリ64GBを搭載したPCを使用した．OSはUbuntu 24.04.3 LTS（Kernel 6.14）を用いた．学習のbatch sizeは8，学習ステップ数は20000ステップとした．
 
-また，センサ値は生データをそのまま使用すると，温度変化によって異なる値を示すため，キャリブレーションを行った．具体的には，各試行の開始時に5秒間静止した状態でセンサ値を取得し，その平均値を基準として各時刻のセンサ値から引き算することで，実験を行う日程や時間帯の変化による温度変化の影響を抑制した．\par
+% また，センサ値は生データをそのまま使用すると，温度変化によって異なる値を示すため，キャリブレーションを行った．具体的には，各試行の開始時に5秒間静止した状態でセンサ値を取得し，その平均値を基準として各時刻のセンサ値から引き算することで，実験を行う日程や時間帯の変化による温度変化の影響を抑制した．\par
 
+% \clearpage
+% \section*{触覚を融合したACTモデルの詳細}
+% 特徴抽出と埋め込み
+% 本システムには，RGBカメラ画像、ロボットの関節角度、および指先触覚センサの値が入力される。Transformerは内部計算において、全ての入力データが同一の次元（ベクトル長）を持つことを前提とするため、各モダリティ（情報の種類）に対して以下の前処理を行い、共通の次元 $d_{model}$ を持つ「トークン（特徴ベクトル）」へ変換する。\par
 
+% 画像情報のエンコード: 複数のカメラから得られたRGB画像は、学習済みの畳み込みニューラルネットワーク（CNN）である ResNet18 等に入力される。CNN は画像からエッジやテクスチャなどの空間的な特徴を抽出する。得られた特徴マップは平坦化（Flatten）された後、線形層（Linear layer）を介して次元 $d_{model}$ へと射影される。\par
 
+% 状態情報のエンコード: 関節角度や触覚センサの値といった低次元の物理量は、多層パーセプトロン（MLP）等の線形層によって、同様に次元 $d_{model}$ へと射影される。これにより、画像のような高次元データと、センサ値のような低次元データを同一の特徴空間で扱うことが可能となる。\par
 
+% 位置埋め込み（Positional Embedding）: Transformer 自体はデータの入力順序を認識できない構造であるため、各トークンに対して系列内の位置情報を表すベクトル（位置埋め込み）を加算する。これにより、モデルは「どのデータが何番目の時刻のものか」を区別できるようになる。\par
 
-\clearpage
-\section*{折り紙タスクの実験時のロボットの動作遷移}
-\setcounter{figure}{0}
-\renewcommand{\thefigure}{C.\arabic{figure}}
+% 学習フェーズ
+% 学習時の目的は、与えられた状況（観測）に対してエキスパート（人間）がどのような意図やスタイルで動作したかをモデルに学習させることである。学習時には CVAE エンコーダへ現在の観測と教師データである未来のアクション系列を入力する。\par
 
-折り紙タスクにおけるロボットの動作遷移を以下に示す．
+% [CLS] トークンによる情報の集約: CVAE エンコーダには、入力系列の先頭に [CLS]（Classification Token）と呼ばれる特殊な学習可能トークンを付加する。Transformer の自己注意機構により各トークンは互いの情報を参照し合うが、[CLS] トークンは系列全体の情報を自身に集約するよう学習され、結果として [CLS] トークンは「この観測状況においてどのようなアクションが行われたか」というエピソード全体の特徴（スタイル）を圧縮した表現となる。\par
 
-\begin{figure}[htbp]
-  \centering
-  % Top row: 4 screenshots
-  \begin{subfigure}[t]{0.24\textwidth}
-    \centering
-    \includegraphics[width=\linewidth]{tex/Image/kamiyoko1.pdf}
-    \caption*{\#1}
-  \end{subfigure}\hfill
-  \begin{subfigure}[t]{0.24\textwidth}
-    \centering
-    \includegraphics[width=\linewidth]{tex/Image/kamiyoko2.pdf}
-    \caption*{\#2}
-  \end{subfigure}\hfill
-  \begin{subfigure}[t]{0.24\textwidth}
-    \centering
-    \includegraphics[width=\linewidth]{tex/Image/kamiyoko3.pdf}
-    \caption*{\#3}
-  \end{subfigure}\hfill
-  \begin{subfigure}[t]{0.24\textwidth}
-    \centering
-    \includegraphics[width=\linewidth]{tex/Image/kamiyoko4.pdf}
-    \caption*{\#4}
-  \end{subfigure}
+% 潜在変数 $z$ の生成: エンコーダの出力から [CLS] トークンに対応するベクトルを抽出し、これを線形層で変換して平均 $\\mu$ と分散 $\\sigma$ を算出する。これらをパラメータとする正規分布から潜在変数 $z$ をサンプリングする。この $z$ は，各状況における動作の「確率的変動要素（例：速度やスタイルの違い）」を表現する。\par
 
-  \vspace{2mm}
+% 推論フェーズ
+% 推論時および学習時の再構成では、Transformer のエンコーダ・デコーダ構造を用いて、観測データと潜在変数 $z$ から未来のアクションを予測する。\par
 
-  % Middle row: 4 screenshots
-  \begin{subfigure}[t]{0.24\textwidth}
-    \centering
-    \includegraphics[width=\linewidth]{tex/Image/kamiyoko5.pdf}
-    \caption*{\#5}
-  \end{subfigure}\hfill
-  \begin{subfigure}[t]{0.24\textwidth}
-    \centering
-    \includegraphics[width=\linewidth]{tex/Image/kamiyoko6.pdf}
-    \caption*{\#6}
-  \end{subfigure}\hfill
-  \begin{subfigure}[t]{0.24\textwidth}
-    \centering
-    \includegraphics[width=\linewidth]{tex/Image/kamiyoko7.pdf}
-    \caption*{\#7}
-  \end{subfigure}\hfill
-  \begin{subfigure}[t]{0.24\textwidth}
-    \centering
-    \includegraphics[width=\linewidth]{tex/Image/kamiyoko8.pdf}
-    \caption*{\#8}
-  \end{subfigure}
+% 観測データの統合（Encoder）: 現在の観測データ（画像・関節・触覚）と CVAE から得られた潜在変数 $z$ を結合し、Transformer エンコーダに入力する。ここで Self-Attention により、例えば「画像内の物体の位置」と「現在の腕の角度」の関係性を紐付けるようなモダリティ間の統合処理が行われる。\par
 
-  \vspace{2mm}
+% アクション系列の生成（Decoder）: Transformer デコーダにおけるクエリとして、予測したい未来のステップ数に対応する固定位置埋め込み（Fixed Position Embeddings）を与える。デコーダは Cross-Attention を用いてエンコーダからの情報（Key/Value）を参照しながら各タイムステップのアクション値を算出することで、現在から未来 $k$ ステップ分のアクション系列を一括して出力する。\par
 
-  % Bottom row: 4 screenshots
-  \begin{subfigure}[t]{0.24\textwidth}
-    \centering
-    \includegraphics[width=\linewidth]{tex/Image/kamiyoko9.pdf}
-    \caption*{\#9}
-  \end{subfigure}\hfill
-  \begin{subfigure}[t]{0.24\textwidth}
-    \centering
-    \includegraphics[width=\linewidth]{tex/Image/kamiyoko10.pdf}
-    \caption*{\#10}
-  \end{subfigure}\hfill
-  \begin{subfigure}[t]{0.24\textwidth}
-    \centering
-    \includegraphics[width=\linewidth]{tex/Image/kamiyoko11.pdf}
-    \caption*{\#11}
-  \end{subfigure}\hfill
-  \begin{subfigure}[t]{0.24\textwidth}
-    \centering
-    \includegraphics[width=\linewidth]{tex/Image/kamiyoko12.pdf}
-    \caption*{\#12}
-  \end{subfigure}
-
-  \caption{Sequence of side-view camera images during origami task in time order.}
-  \label{figC:kamiyoko_timeorder}
-\end{figure}
-
-\begin{figure}[htbp]
-  \centering
-  % Top row: 4 top-view screenshots
-  \begin{subfigure}[t]{0.24\textwidth}
-    \centering
-    \includegraphics[width=\linewidth]{tex/Image/kamiue1.pdf}
-    \caption*{\#1}
-  \end{subfigure}\hfill
-  \begin{subfigure}[t]{0.24\textwidth}
-    \centering
-    \includegraphics[width=\linewidth]{tex/Image/kamiue2.pdf}
-    \caption*{\#2}
-  \end{subfigure}\hfill
-  \begin{subfigure}[t]{0.24\textwidth}
-    \centering
-    \includegraphics[width=\linewidth]{tex/Image/kamiue3.pdf}
-    \caption*{\#3}
-  \end{subfigure}\hfill
-  \begin{subfigure}[t]{0.24\textwidth}
-    \centering
-    \includegraphics[width=\linewidth]{tex/Image/kamiue4.pdf}
-    \caption*{\#4}
-  \end{subfigure}
-
-  \vspace{2mm}
-
-  % Middle row: 4 top-view screenshots
-  \begin{subfigure}[t]{0.24\textwidth}
-    \centering
-    \includegraphics[width=\linewidth]{tex/Image/kamiue5.pdf}
-    \caption*{\#5}
-  \end{subfigure}\hfill
-  \begin{subfigure}[t]{0.24\textwidth}
-    \centering
-    \includegraphics[width=\linewidth]{tex/Image/kamiue6.pdf}
-    \caption*{\#6}
-  \end{subfigure}\hfill
-  \begin{subfigure}[t]{0.24\textwidth}
-    \centering
-    \includegraphics[width=\linewidth]{tex/Image/kamiue7.pdf}
-    \caption*{\#7}
-  \end{subfigure}\hfill
-  \begin{subfigure}[t]{0.24\textwidth}
-    \centering
-    \includegraphics[width=\linewidth]{tex/Image/kamiue8.pdf}
-    \caption*{\#8}
-  \end{subfigure}
-
-  \vspace{2mm}
-
-  % Bottom row: 4 top-view screenshots
-  \begin{subfigure}[t]{0.24\textwidth}
-    \centering
-    \includegraphics[width=\linewidth]{tex/Image/kamiue9.pdf}
-    \caption*{\#9}
-  \end{subfigure}\hfill
-  \begin{subfigure}[t]{0.24\textwidth}
-    \centering
-    \includegraphics[width=\linewidth]{tex/Image/kamiue10.pdf}
-    \caption*{\#10}
-  \end{subfigure}\hfill
-  \begin{subfigure}[t]{0.24\textwidth}
-    \centering
-    \includegraphics[width=\linewidth]{tex/Image/kamiue11.pdf}
-    \caption*{\#11}
-  \end{subfigure}\hfill
-  \begin{subfigure}[t]{0.24\textwidth}
-    \centering
-    \includegraphics[width=\linewidth]{tex/Image/kamiue12.pdf}
-    \caption*{\#12}
-  \end{subfigure}
-
-  \caption{Sequence of top-view camera images during origami task in time order.}
-  \label{figC:kamiue_timeorder}
-\end{figure}
-
-\clearpage
-\section*{触覚を融合したACTモデルの詳細}
-特徴抽出と埋め込み
-本システムには，RGBカメラ画像、ロボットの関節角度、および指先触覚センサの値が入力される。Transformerは内部計算において、全ての入力データが同一の次元（ベクトル長）を持つことを前提とするため、各モダリティ（情報の種類）に対して以下の前処理を行い、共通の次元 $d_{model}$ を持つ「トークン（特徴ベクトル）」へ変換する。\par
-
-画像情報のエンコード: 複数のカメラから得られたRGB画像は、学習済みの畳み込みニューラルネットワーク（CNN）である ResNet18 等に入力される。CNN は画像からエッジやテクスチャなどの空間的な特徴を抽出する。得られた特徴マップは平坦化（Flatten）された後、線形層（Linear layer）を介して次元 $d_{model}$ へと射影される。\par
-
-状態情報のエンコード: 関節角度や触覚センサの値といった低次元の物理量は、多層パーセプトロン（MLP）等の線形層によって、同様に次元 $d_{model}$ へと射影される。これにより、画像のような高次元データと、センサ値のような低次元データを同一の特徴空間で扱うことが可能となる。\par
-
-位置埋め込み（Positional Embedding）: Transformer 自体はデータの入力順序を認識できない構造であるため、各トークンに対して系列内の位置情報を表すベクトル（位置埋め込み）を加算する。これにより、モデルは「どのデータが何番目の時刻のものか」を区別できるようになる。\par
-
-学習フェーズ
-学習時の目的は、与えられた状況（観測）に対してエキスパート（人間）がどのような意図やスタイルで動作したかをモデルに学習させることである。学習時には CVAE エンコーダへ現在の観測と教師データである未来のアクション系列を入力する。\par
-
-[CLS] トークンによる情報の集約: CVAE エンコーダには、入力系列の先頭に [CLS]（Classification Token）と呼ばれる特殊な学習可能トークンを付加する。Transformer の自己注意機構により各トークンは互いの情報を参照し合うが、[CLS] トークンは系列全体の情報を自身に集約するよう学習され、結果として [CLS] トークンは「この観測状況においてどのようなアクションが行われたか」というエピソード全体の特徴（スタイル）を圧縮した表現となる。\par
-
-潜在変数 $z$ の生成: エンコーダの出力から [CLS] トークンに対応するベクトルを抽出し、これを線形層で変換して平均 $\\mu$ と分散 $\\sigma$ を算出する。これらをパラメータとする正規分布から潜在変数 $z$ をサンプリングする。この $z$ は，各状況における動作の「確率的変動要素（例：速度やスタイルの違い）」を表現する。\par
-
-推論フェーズ
-推論時および学習時の再構成では、Transformer のエンコーダ・デコーダ構造を用いて、観測データと潜在変数 $z$ から未来のアクションを予測する。\par
-
-観測データの統合（Encoder）: 現在の観測データ（画像・関節・触覚）と CVAE から得られた潜在変数 $z$ を結合し、Transformer エンコーダに入力する。ここで Self-Attention により、例えば「画像内の物体の位置」と「現在の腕の角度」の関係性を紐付けるようなモダリティ間の統合処理が行われる。\par
-
-アクション系列の生成（Decoder）: Transformer デコーダにおけるクエリとして、予測したい未来のステップ数に対応する固定位置埋め込み（Fixed Position Embeddings）を与える。デコーダは Cross-Attention を用いてエンコーダからの情報（Key/Value）を参照しながら各タイムステップのアクション値を算出することで、現在から未来 $k$ ステップ分のアクション系列を一括して出力する。\par
-
-このように、[CLS] トークンを用いた情報の圧縮（CVAE）と Attention 機構によるマルチモーダル情報の統合（Transformer）を組み合わせることで、視覚・固有感覚・触覚を高度に融合したロバストな動作生成が可能となる。
+% このように、[CLS] トークンを用いた情報の圧縮（CVAE）と Attention 機構によるマルチモーダル情報の統合（Transformer）を組み合わせることで、視覚・固有感覚・触覚を高度に融合したロバストな動作生成が可能となる。

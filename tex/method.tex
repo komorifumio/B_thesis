@@ -7,7 +7,7 @@
   \caption{Overview of the proposed imitation learning system using a teleoperation setup and haptic information}
   \label{fig:robot_system}
 \end{figure}
-本章では，提案する重力補償を適用したテレオペレーションシステムと，模倣学習手法について述べる．Fig\ref{fig:robot_system}にシステムの構成図を示す．本システムは，リーダー・フォロワー構成のロボットアーム，フォロワーアーム先端についている２つのイオン液体センサを内蔵したソフトフィンガー，フォロワーアームを上からと横から観測するカメラ２台，およびこれらを制御・学習するためのPCから構成される．テレオペレーションによる教示データ収集時には，操作者がリーダーアームを操作し，フォロワーアームで物体操作を行う．収集した教示データを用いて，模倣学習によりフォロワーアームの動作モデルを学習する．学習モデルの入力として，カメラ画像，フォロワーアームの関節角度，およびソフトフィンガーからの触覚情報を用いる．学習後は，フォロワーアームが自律的に物体操作タスクを実行する．以下に，各構成要素について詳細に述べる．\par
+本章では，提案する重力補償を適用したテレオペレーションシステムと，模倣学習手法について述べる．Fig\ref{fig:robot_system}にシステムの構成図を示す．本システムは，リーダー・フォロワー構成のロボットアーム，フォロワーアーム先端についている２つのイオン液体センサを内蔵したソフトフィンガー，フォロワーアームを側面と上面から観測するカメラ２台，およびこれらを制御・学習するためのPCから構成される．テレオペレーションによる教示データ収集時には，操作者がリーダーアームを操作し，フォロワーアームで物体操作を行う．収集した教示データを用いて，模倣学習によりフォロワーアームの動作モデルを学習する．学習モデルの入力として，カメラ画像，フォロワーアームの関節角度，およびソフトフィンガーからの触覚情報を用いる．学習後は，フォロワーアームが自律的に物体操作タスクを実行する．以下に，各構成要素について詳細に述べる．\par
 
 
 \newpage
@@ -16,14 +16,9 @@
 　フォロワーアームのハンド部分には，柔軟な把持と接触検知を実現するためにソフトフィンガーを装着する．このフィンガーは柔らかいシリコンゴムの本体と，PLAの爪部分でできており，内部にはイオン液体を封入した流路を持つ触覚センサが埋め込まれている．
 センサ素子として用いるイオン液体は導電性を有するほか，不揮発性や難燃性，高い熱安定性といった物理的特性を持つ\cite{armandIonicliquidMaterialsElectrochemical2009}．
 この液体を柔軟な流路内に封入することで，対象物への接触により流路が変形し，その断面積 $A$ や長さ $L$ が変化する．
-この幾何学的な変化は，イオン液体固有の電気抵抗率 $\rho$ を用いて以下の式(\ref{eq:resistance})で表される抵抗値 $R$ の変化として検出される\cite{chossatSoftStrainSensor2013}．
+この幾何学的な変化は，イオン液体固有の電気抵抗率 $\rho$ を用いて式 $R = \rho \frac{L}{A}$ で表される抵抗値 $R$ の変化として検出される\cite{chossatSoftStrainSensor2013}．
 
-\begin{equation}
-  R = \rho \frac{L}{A}
-  \label{eq:resistance}
-\end{equation}
-
-なお，本実験ではイオン液体として1-Butyl-3-methylimidazolium Bis(fluorosulfonyl)imide（関東化学株式会社製）を使用した．ただし，このイオン液体は温度によって抵抗値が多少変化するため，データ収集時と，モデルの評価時に毎回キャリブレーションを行った．
+なお，本実験ではイオン液体として1-Butyl-3-methylimidazolium Bis(fluorosulfonyl)imide（関東化学株式会社製）を使用した．なお，このイオン液体の電気抵抗値は温度依存性を持つため\cite{hammockElectronicSkin2013}，抵抗値は環境温度によって変動する．そこで本システムでは，データ収集および評価実験の各試行開始時にキャリブレーション（ゼロ点補正）を行うことで，温度変化によるドリフトの影響を抑制している．\par
 
 
 
@@ -43,16 +38,17 @@
 \subsection{操作性に優れたリーダーアーム}
 
 \subsubsection{リーダーアームのグリッパ設計}
-　リーダーアームのグリッパは直感的に操作しやすいように，手のひらで握る用の棒状の把手と，人差し指と親指を差し込むための穴を設けた．これにより，手のひら全体でグリッパを保持しつつ，指先で細かい開閉操作を行うことが可能になる．
+　リーダーアームの操作性を向上させるため，人間の手による把持に適した形状のグリッパを設計した（Fig.~\ref{fig:opened_leadergripper}, Fig.~\ref{fig:closed_leadergripper}）．本グリッパは，手掌部で安定して保持可能な円筒形状のグリップと，人差し指・親指を挿入するための操作用リングを備えている．これにより，操作者は手のひら全体でグリッパを支えつつ，指先を用いて繊細な開閉操作を行うことが可能となる．
+
 
 \begin{center}
-  \begin{minipage}{0.48\textwidth}
+  \begin{minipage}{0.40\textwidth}
     \centering
     \includegraphics[width=\linewidth]{tex/Image/openleadergripper.drawio.pdf}
     \captionof{figure}{Gripper in open state}
     \label{fig:opened_leadergripper}
   \end{minipage}\hfill
-  \begin{minipage}{0.48\textwidth}
+  \begin{minipage}{0.40\textwidth}
     \centering
     \includegraphics[width=\linewidth]{tex/Image/closedleadergripper.pdf}
     \captionof{figure}{Gripper in closed state}
@@ -60,16 +56,16 @@
   \end{minipage}
 \end{center}
 
-また，グリッパを握ると自然とちょうど人間の前腕とリーダーアームの前腕リンクがFig2.4のように対応する．これにより操作者は自分の腕を動かす感覚でリーダーアームを操作できる．
+また，操作者がグリッパを把持した際，人間の前腕とリーダーアームの前腕リンクが幾何学的に対応するよう設計されている（Fig.~\ref{fig:leader_arm_with_me}, Fig.~\ref{fig:leader_gripper_with_me}）．これにより，操作者は自身の腕の延長としてリーダーアームを直感的に操作することが可能となり，学習に適した自然な教示データの収集が容易となる．
 
 \begin{center}
-  \begin{minipage}{0.48\textwidth}
+  \begin{minipage}{0.40\textwidth}
     \centering
     \includegraphics[width=\linewidth]{tex/Image/leaderarmwithme.drawio.pdf}
     \captionof{figure}{Leader arm with operator (overview)}
     \label{fig:leader_arm_with_me}
   \end{minipage}\hfill
-  \begin{minipage}{0.48\textwidth}
+  \begin{minipage}{0.40\textwidth}
     \centering
     \includegraphics[width=\linewidth]{tex/Image/leadergripperwithme.pdf}
     \captionof{figure}{Leader gripper held by operator}

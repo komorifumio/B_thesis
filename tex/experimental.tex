@@ -28,18 +28,20 @@
 \end{figure}
 
 
-　本実験では，触覚情報の有用性を検証するために，触覚センサのデータを含んだ学習と含まない学習の2つの条件で，キムタオルを掴んで別の場所に離すタスクの成功率を比較した．ただし，将来的な双腕マニピュレーションでのもう一方のアームによるオクルージョン，あるいは箱の中に物体が入っていて上からしか見えない状態を想定し，アームの横からのカメラでキムタオルの高さを見ることができないような紺色の障害物を設置した．実験のセットアップをFig\ref{fig:experiment_setup_grasp}に示す．\par
+　本実験では，提案手法における触覚情報の有用性を検証するため，触覚センサ情報の有無（sensor\_on / sensor\_off）がタスク成功率に与える影響を比較した．タスクは，積層されたキムタオルを把持し，所定の場所へ搬送する動作とした．なお，実験環境の構築にあたっては，双腕ロボットによる協調作業や深箱内の物体操作において発生しうる，視覚的な閉塞（オクルージョン）状況を再現した．具体的には，Fig. 3.1に示すように紺色の障害物を設置し，側面カメラ（Camera 1）からは対象物（キムタオル）の高さ情報が得られない環境を構築した．\par
 
 \subsubsection{タスクの教示，学習条件}
-教示データは，キムタオルをFig3.1においてある場所にある枚数置いておき，リーダーアームでその上から１枚だけとって紺色の障害物の左側に離す動作をテレオペレーションで行い収集した．この時，双腕や箱を想定した障害物により横からのカメラではキムタオルの高さが見えない．その上，目の前にある障害物を避けてキムタオルへのアプローチをする必要があり，7自由度でないと実現が難しい．\par
-キムタオルの高さは枚数を50枚，40枚，30枚，20枚，10枚の5段階でそれぞれ2回の教示データ，合計10回の教示データを収集した．教示データ収集時は，センサ値も取得しており，学習時は，その値を無視して学習するsensor\_off条件と，センサ値を使用して学習するsensor\_on条件の2つで学習を行った．\par
+教示データ収集では，Fig. 3.1に示すセットアップにおいて，リーダーアームを用いたテレオペレーションにより，積層されたキムタオルの最上位1枚のみを把持し，障害物の左側へ搬送する動作を行った．この際，正面の障害物を回避しながらアプローチする必要があるため，7自由度アームの冗長性を活かした操作が要求される．\par
+対象物であるキムタオルの積層枚数は，50枚，40枚，30枚，20枚，10枚の5段階とし，各条件につき2回，計10回分の教示データを収集した．データ収集時には触覚センサの生データ値も記録し，学習時にはこのセンサ値を使用しない条件（sensor\_off）と，使用する条件（sensor\_on）の2条件でモデルを生成した．\par
+
+学習モデルのトレーニングは，AMD Ryzen 9 9950X CPU，NVIDIA GeForce RTX 5080 GPU (16GB)，および64GBのメモリを搭載したPC（OS: Ubuntu 24.04.3 LTS）を用いて実施した．ハイパーパラメータに関しては，バッチサイズを8，学習ステップ数を20,000ステップに設定した．\par
+
+また，本研究で使用するイオン液体センサは，周囲温度の変化に伴いベースラインとなる抵抗値が変動する特性を持つ．この環境変動（温度ドリフト）の影響を排除するため，各データ収集セットの開始時にキャリブレーション処理を導入した．具体的には，動作開始前の5秒間におけるセンサ値を静止状態で取得し，その平均値を初期オフセット値として算出する．タスク実行中は，取得された生データからこのオフセット値を減算した値を学習および推論への入力とすることで，実験ごとの温度条件の差異を正規化した．\par
 
 \subsubsection{タスクの評価と成功率}
+タスクの成功条件は，「積層されたキムタオルから1枚のみを把持し，障害物左側の目標領域へ搬送すること」と定義した．目標領域は障害物の左側全域である．最初の把持動作でキムタオルを掴み損ねてロボットが自律的に再把持（リトライ）動作を行った場合は，それ以降の動作にかかわらず失敗と判定した．\par
 
-
-タスクの成否は，キムタオルを1枚だけ掴んで，障害物の左側のどこでもいいので移動させることができたら成功とした．ただし，掴み損ねて何度もつかみに行こうとした場合は失敗とした．
-検証時は教示時のキムタオルの枚数から増やしたものと減らした未知の枚数のものを用意し，全部で60枚，50枚，40枚，30枚，20枚，10枚，1枚の7段階でそれぞれ5回の試行を行い，成功率を算出した．\par
-以下にそれぞれの枚数のキムタオルの様子を示す．\par
+評価実験では，教示データに含まれない未知の環境に対する汎化性能を検証するため，教示時の枚数条件（10, 20, 30, 40, 50枚）に加え，教示範囲外となる60枚および1枚の条件を含めた計7段階の高さ条件を用意した．各条件について5回の試行を行い，成功率を算出した．各枚数条件における対象物の様子をFig. 3.2に示す．\par
 
 \begin{figure}[htbp]
   \centering
@@ -83,7 +85,7 @@
 \end{figure}
 
 
-さらに，指先のソフトフィンガーの長さを教示時とは短くしたものでも評価を行った．1つ目は教示データと同じ状態，2つ目はそれよりも指の長さが30mm短い状態である．\par
+さらに，経年変化やパーツ交換によるハードウェアの変動を想定し，指先のソフトフィンガーの長さを変更した条件での評価も行った．具体的には，教示時と同一の長さの条件（Fig. 3.3）に加え、指先位置を30mm短縮した条件（Fig. 3.4）においても検証を行った．\par
 
 \begin{figure}[htbp]
   \centering
@@ -262,35 +264,212 @@ FigB.1 およびFig B.2 において，同じ記号（\#1～\#8）が付され�
 \end{figure}
 
 
-　重力補償がなければできないタスクとして，折り紙１枚をソフトフィンガーでつかみ，折り曲げるタスクを行った．ロボットアーム１台で折り紙を折る動作を行うため，折り紙の左端は２点で固定する治具をつけ，折りたたんだ際にも人間がその２点にたたむ紙を刺すという補助を行った．この補助をするためには，操作者が一旦ロボットアームから手を離して折り紙をジグに刺す必要があるため，人間が2人以上いない限りは重力補償制御が不可欠である．\par
+　本節では，重力補償制御の有用性を検証するため，ロボットアームと人間が協働して行う折り紙タスクを実施した．
+折り紙のような柔軟物を扱う作業では，正確な折り目をつけるために両手（あるいは複数のマニピュレータ）による操作が求められる場合が多い．本実験では，単腕ロボットアームでこのタスクを遂行するため，人間が環境側に介入して紙を固定する補助を行う設定とした．この際，操作者は「リーダーアームの操作」と「紙の固定補助」という2つの役割を1人で担う必要がある．そのため，補助動作中はリーダーアームから手を離す必要が生じるが，重力補償が適用されていれば，アームはその姿勢を維持し続けることができる．
+
+% ロボットアーム１台で折り紙を折る動作を行うため，折り紙の左端は２点で固定する治具をつけ，折りたたんだ際にも人間がその２点にたたむ紙を刺すという補助を行った．この補助をするためには，操作者が一旦ロボットアームから手を離して折り紙をジグに刺す必要があるため，人間が2人以上いない限りは重力補償制御が不可欠である．\par
 
 \begin{figure}[htbp]
   \centering
   \begin{subfigure}[t]{0.32\textwidth}
     \centering
     \includegraphics[width=\linewidth]{tex/Image/jig.pdf}
-    \caption*{治具}
+    \caption*{Jig only}
   \end{subfigure}\hfill
   \begin{subfigure}[t]{0.32\textwidth}
     \centering
     \includegraphics[width=\linewidth]{tex/Image/jigwith1paper.pdf}
-    \caption*{治具 + 1枚の折り紙}
+    \caption*{Jig with 1 sheet}
   \end{subfigure}\hfill
   \begin{subfigure}[t]{0.32\textwidth}
     \centering
     \includegraphics[width=\linewidth]{tex/Image/jigwith2paper.pdf}
-    \caption*{治具 + 2枚の折り紙}
+    \caption*{Jig with 2 sheets folded}
   \end{subfigure}
 
-  \caption{治具の写真：左から治具単体，紙1枚装着，紙2枚装着．}
+  \caption{Photographs of jig: from left to right, jig alone, jig with 1 sheet of paper attached, jig with 2 sheets of paper attached.}
   \label{figC:jig_photographs}
 \end{figure}
 
 \subsubsection{タスクの教示，学習条件}
-ポリシーは計10回のエピソードを取り，治具の位置は変えずにまず人間がだいたい紙の左上に２点刺すようにセッティングした．そのため，紙の位置は毎回微妙にずれている．
-各エピソードで，操作者はリーダーアームを操作して折り紙を折り，一旦折ったらその状態でアームを重力補償下で固定し，紙を治具の2点に刺すという補助を行い，折り目をつける段階へと移行した．\par
+実験セットアップをFig. 3.5に示す．単腕での操作を補助するため．折り紙の片側を固定する専用の治具（Fig. 3.6）を作製した．タスクの目標は，机上の治具に固定された折り紙を把持し，谷折りにして折り目をつけることである．治具には固定用のピンが設けられており，ロボットが紙を折り返したタイミングで，人間が紙をピンに差し込み固定を行う．
 
+教示データ収集は計10エピソード行った．各エピソードの開始時，折り紙の配置位置は固定せず，操作者が治具に対して概略の位置に配置した．
+
+教示の具体的な手順は以下の通りである（Fig. C.1参照）．\par
+
+把持・折り動作: 操作者はリーダーアームを操作し，ソフトフィンガーで紙を把持して折り返す（\#1〜\#5）．\par
+
+姿勢維持（重力補償の活用）: ロボットが紙を折り返した状態で，操作者はリーダーアームから手を離す．重力補償により，ロボットは紙を保持したままの姿勢を維持する．\par
+
+人間による介入: 操作者は手を使って紙を治具のピンに固定する（\#6）．\par
+
+折り目付け: 再びリーダーアームを操作し，爪部分を使用し折り目を作る動作を行う（\#7〜\#8）．\par
+
+
+\clearpage
+\section*{折り紙タスクの実験時のロボットの動作遷移}
+\setcounter{figure}{0}
+\renewcommand{\thefigure}{C.\arabic{figure}}
+\vspace{-3mm}
+
+折り紙タスクにおけるロボットの動作遷移を以下に示す．
+\vspace{-2mm}
+
+\begin{figure}[htbp]
+  \centering
+  % Top row: 4 screenshots
+  \begin{subfigure}[t]{0.24\textwidth}
+    \centering
+    \includegraphics[trim={60mm 30mm 40mm 10mm},clip,width=\linewidth]{tex/Image/kamiyoko1.pdf}
+    \caption*{\#1}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.24\textwidth}
+    \centering
+    \includegraphics[trim={60mm 30mm 40mm 10mm},clip,width=\linewidth]{tex/Image/kamiyoko2.pdf}
+    \caption*{\#2}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.24\textwidth}
+    \centering
+    \includegraphics[trim={60mm 30mm 40mm 10mm},clip,width=\linewidth]{tex/Image/kamiyoko3.pdf}
+    \caption*{\#3}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.24\textwidth}
+    \centering
+    \includegraphics[trim={60mm 30mm 40mm 10mm},clip,width=\linewidth]{tex/Image/kamiyoko4.pdf}
+    \caption*{\#4}
+  \end{subfigure}
+
+  \vspace{0.5mm}
+
+  % Middle row: 4 screenshots
+  \begin{subfigure}[t]{0.24\textwidth}
+    \centering
+    \includegraphics[trim={60mm 30mm 40mm 10mm},clip,width=\linewidth]{tex/Image/kamiyoko5.pdf}
+    \caption*{\#5}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.24\textwidth}
+    \centering
+    \includegraphics[trim={60mm 30mm 40mm 10mm},clip,width=\linewidth]{tex/Image/kamiyoko6.pdf}
+    \caption*{\#6}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.24\textwidth}
+    \centering
+    \includegraphics[trim={60mm 30mm 40mm 10mm},clip,width=\linewidth]{tex/Image/kamiyoko7.pdf}
+    \caption*{\#7}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.24\textwidth}
+    \centering
+    \includegraphics[trim={60mm 30mm 40mm 10mm},clip,width=\linewidth]{tex/Image/kamiyoko8.pdf}
+    \caption*{\#8}
+  \end{subfigure}
+
+  \vspace{0.5mm}
+
+  % Bottom row: 4 screenshots
+  \begin{subfigure}[t]{0.24\textwidth}
+    \centering
+    \includegraphics[trim={60mm 30mm 40mm 10mm},clip,width=\linewidth]{tex/Image/kamiyoko9.pdf}
+    \caption*{\#9}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.24\textwidth}
+    \centering
+    \includegraphics[trim={60mm 30mm 40mm 10mm},clip,width=\linewidth]{tex/Image/kamiyoko10.pdf}
+    \caption*{\#10}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.24\textwidth}
+    \centering
+    \includegraphics[trim={60mm 30mm 40mm 10mm},clip,width=\linewidth]{tex/Image/kamiyoko11.pdf}
+    \caption*{\#11}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.24\textwidth}
+    \centering
+    \includegraphics[trim={60mm 30mm 40mm 10mm},clip,width=\linewidth]{tex/Image/kamiyoko12.pdf}
+    \caption*{\#12}
+  \end{subfigure}
+
+  \caption{Sequence of side-view camera images during origami task in time order.}
+  \label{figC:kamiyoko_timeorder}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  % Top row: 4 top-view screenshots
+  \begin{subfigure}[t]{0.24\textwidth}
+    \centering
+    \includegraphics[trim={60mm 20mm 40mm 10mm},clip,width=\linewidth]{tex/Image/kamiue1.pdf}
+    \caption*{\#1}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.24\textwidth}
+    \centering
+    \includegraphics[trim={60mm 20mm 40mm 10mm},clip,width=\linewidth]{tex/Image/kamiue2.pdf}
+    \caption*{\#2}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.24\textwidth}
+    \centering
+    \includegraphics[trim={60mm 20mm 40mm 10mm},clip,width=\linewidth]{tex/Image/kamiue3.pdf}
+    \caption*{\#3}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.24\textwidth}
+    \centering
+    \includegraphics[trim={60mm 20mm 40mm 10mm},clip,width=\linewidth]{tex/Image/kamiue4.pdf}
+    \caption*{\#4}
+  \end{subfigure}
+
+  \vspace{2mm}
+
+  % Middle row: 4 top-view screenshots
+  \begin{subfigure}[t]{0.24\textwidth}
+    \centering
+    \includegraphics[trim={60mm 20mm 40mm 10mm},clip,width=\linewidth]{tex/Image/kamiue5.pdf}
+    \caption*{\#5}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.24\textwidth}
+    \centering
+    \includegraphics[trim={60mm 20mm 40mm 10mm},clip,width=\linewidth]{tex/Image/kamiue6.pdf}
+    \caption*{\#6}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.24\textwidth}
+    \centering
+    \includegraphics[trim={60mm 20mm 40mm 10mm},clip,width=\linewidth]{tex/Image/kamiue7.pdf}
+    \caption*{\#7}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.24\textwidth}
+    \centering
+    \includegraphics[trim={60mm 20mm 40mm 10mm},clip,width=\linewidth]{tex/Image/kamiue8.pdf}
+    \caption*{\#8}
+  \end{subfigure}
+
+  \vspace{2mm}
+
+  % Bottom row: 4 top-view screenshots
+  \begin{subfigure}[t]{0.24\textwidth}
+    \centering
+    \includegraphics[trim={60mm 20mm 40mm 10mm},clip,width=\linewidth]{tex/Image/kamiue9.pdf}
+    \caption*{\#9}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.24\textwidth}
+    \centering
+    \includegraphics[trim={60mm 20mm 40mm 10mm},clip,width=\linewidth]{tex/Image/kamiue10.pdf}
+    \caption*{\#10}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.24\textwidth}
+    \centering
+    \includegraphics[trim={60mm 20mm 40mm 10mm},clip,width=\linewidth]{tex/Image/kamiue11.pdf}
+    \caption*{\#11}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.24\textwidth}
+    \centering
+    \includegraphics[trim={60mm 20mm 40mm 10mm},clip,width=\linewidth]{tex/Image/kamiue12.pdf}
+    \caption*{\#12}
+  \end{subfigure}
+
+  \caption{Sequence of top-view camera images during origami task in time order.}
+  \label{figC:kamiue_timeorder}
+\end{figure}
+
+\FloatBarrier
 
 \subsubsection{タスクの評価と成功率}
-　折り紙を他に折り目をつけずに教示時と同じ向きに折りたたむことができ，折り紙を自然にしたときに折り目が開かなければ成功とした．10回の試行を行い，9回成功し，成功率は90\%であった．
+　タスクの成功条件は，「余分な折り目をつけることなく，教示と同様の方向に紙を折ることができ，かつ外力を加えない状態で折り目が維持されていること」とした．実験の結果，10回の試行のうち9回で成功し，成功率は90\%であった．
 \par
