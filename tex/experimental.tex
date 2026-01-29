@@ -31,13 +31,12 @@
 　本実験では，触覚情報の有用性を検証するために，触覚センサのデータを含んだ学習と含まない学習の2つの条件で，キムタオルを掴んで別の場所に離すタスクの成功率を比較した．ただし，将来的な双腕マニピュレーションでのもう一方のアームによるオクルージョン，あるいは箱の中に物体が入っていて上からしか見えない状態を想定し，アームの横からのカメラでキムタオルの高さを見ることができないような紺色の障害物を設置した．実験のセットアップをFig\ref{fig:experiment_setup_grasp}に示す．\par
 
 \subsubsection{タスクの教示，学習条件}
-教示データは，キムタオルをFig3.1においてある場所にある枚数置いておき，リーダーアームでその上から１枚だけとって紺色の障害物の左側に離す動作をテレオペレーションで行い収集した．この時，双腕や箱を想定した障害物により横からのカメラではキムタオルの高さが見えない．\par
+教示データは，キムタオルをFig3.1においてある場所にある枚数置いておき，リーダーアームでその上から１枚だけとって紺色の障害物の左側に離す動作をテレオペレーションで行い収集した．この時，双腕や箱を想定した障害物により横からのカメラではキムタオルの高さが見えない．その上，目の前にある障害物を避けてキムタオルへのアプローチをする必要があり，7自由度でないと実現が難しい．\par
 キムタオルの高さは枚数を50枚，40枚，30枚，20枚，10枚の5段階でそれぞれ2回の教示データ，合計10回の教示データを収集した．教示データ収集時は，センサ値も取得しており，学習時は，その値を無視して学習するsensor\_off条件と，センサ値を使用して学習するsensor\_on条件の2つで学習を行った．\par
-学習の条件は，CPUにAMD Ryzen 9 9950X，GPUにNVIDIA GeForce RTX 5080，メモリ64GBを搭載したPCを使用した．OSはUbuntu 24.04.3 LTS（Kernel 6.14）を用いた．学習のbatch sizeは8，学習ステップ数は20000ステップとした．
-
-
 
 \subsubsection{タスクの評価と成功率}
+
+
 タスクの成否は，キムタオルを1枚だけ掴んで，障害物の左側のどこでもいいので移動させることができたら成功とした．ただし，掴み損ねて何度もつかみに行こうとした場合は失敗とした．
 検証時は教示時のキムタオルの枚数から増やしたものと減らした未知の枚数のものを用意し，全部で60枚，50枚，40枚，30枚，20枚，10枚，1枚の7段階でそれぞれ5回の試行を行い，成功率を算出した．\par
 以下にそれぞれの枚数のキムタオルの様子を示す．\par
@@ -84,7 +83,7 @@
 \end{figure}
 
 
-さらに，指先のソフトフィンガーの長さを教示時とは短くしたものでも評価を行った．1つ目は教示データと同じ状態，2つ目はそれよりも指の長さが30mm短い状態である．指の長さが長いものにすると，センサ値がない場合に指を強く押し付けすぎて危険なため30mm長いものは使用しなかった．\par
+さらに，指先のソフトフィンガーの長さを教示時とは短くしたものでも評価を行った．1つ目は教示データと同じ状態，2つ目はそれよりも指の長さが30mm短い状態である．\par
 
 \begin{figure}[htbp]
   \centering
@@ -141,8 +140,119 @@
 
 
 
-\newpage
-\subsection{重力補償がなければできない折り紙タスク}
+\clearpage
+\subsubsection*{キムタオル把持タスクの実験時のロボットの動作遷移}
+\setcounter{figure}{0}
+\renewcommand{\thefigure}{B.\arabic{figure}}
+
+FigB.1 およびFig B.2 において，同じ記号（\#1～\#8）が付された画像は，側面カメラおよび上面カメラによって同時に撮影されたフレームに対応している．
+
+\begin{figure}[htbp]
+  \centering
+  % Top row: 4 screenshots
+  \begin{subfigure}[t]{0.24\textwidth}
+    \centering
+    \includegraphics[trim={70mm 20mm 10mm 5mm},clip,width=\linewidth]{tex/Image/kimyoko1.pdf}
+    \caption*{\#1}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.24\textwidth}
+    \centering
+    \includegraphics[trim={70mm 20mm 10mm 5mm},clip,width=\linewidth]{tex/Image/kimyoko2.pdf}
+    \caption*{\#2}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.24\textwidth}
+    \centering
+    \includegraphics[trim={70mm 20mm 10mm 5mm},clip,width=\linewidth]{tex/Image/kimyoko3.pdf}
+    \caption*{\#3}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.24\textwidth}
+    \centering
+    \includegraphics[trim={70mm 20mm 10mm 5mm},clip,width=\linewidth]{tex/Image/kimyoko4.pdf}
+    \caption*{\#4}
+  \end{subfigure}
+
+  \vspace{2mm}
+
+  % Bottom row: 4 screenshots
+  \begin{subfigure}[t]{0.24\textwidth}
+    \centering
+    \includegraphics[trim={70mm 20mm 10mm 5mm},clip,width=\linewidth]{tex/Image/kimyoko5.pdf}
+    \caption*{\#5 }
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.24\textwidth}
+    \centering
+    \includegraphics[trim={70mm 20mm 10mm 5mm},clip,width=\linewidth]{tex/Image/kimyoko6.pdf}
+    \caption*{\#6 }
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.24\textwidth}
+    \centering
+    \includegraphics[trim={70mm 20mm 10mm 5mm},clip,width=\linewidth]{tex/Image/kimyoko7.pdf}
+    \caption*{\#7 }
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.24\textwidth}
+    \centering
+    \includegraphics[trim={70mm 20mm 10mm 5mm},clip,width=\linewidth]{tex/Image/kimyoko8.pdf}
+    \caption*{\#8 }
+  \end{subfigure}
+
+  \caption{Sequence of side-view camera images in time order.}
+  \label{figB:kimyoko_timeorder}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  % Top row: 4 top-view screenshots
+  \begin{subfigure}[t]{0.24\textwidth}
+    \centering
+    \includegraphics[trim={20mm 0mm 0mm 10mm},clip,width=\linewidth]{tex/Image/kimue1.pdf}
+    \caption*{\#1}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.24\textwidth}
+    \centering
+    \includegraphics[trim={20mm 0mm 0mm 10mm},clip,width=\linewidth]{tex/Image/kimue2.pdf}
+    \caption*{\#2}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.24\textwidth}
+    \centering
+    \includegraphics[trim={20mm 0mm 0mm 10mm},clip,width=\linewidth]{tex/Image/kimue3.pdf}
+    \caption*{\#3}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.24\textwidth}
+    \centering
+    \includegraphics[trim={20mm 0mm 0mm 10mm},clip,width=\linewidth]{tex/Image/kimue4.pdf}
+    \caption*{\#4}
+  \end{subfigure}
+
+  \vspace{2mm}
+
+  % Bottom row: 4 top-view screenshots
+  \begin{subfigure}[t]{0.24\textwidth}
+    \centering
+    \includegraphics[trim={20mm 0mm 0mm 10mm},clip,width=\linewidth]{tex/Image/kimue5.pdf}
+    \caption*{\#5 }
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.24\textwidth}
+    \centering
+    \includegraphics[trim={20mm 0mm 0mm 10mm},clip,width=\linewidth]{tex/Image/kimue6.pdf}
+    \caption*{\#6 }
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.24\textwidth}
+    \centering
+    \includegraphics[trim={20mm 0mm 0mm 10mm},clip,width=\linewidth]{tex/Image/kimue7.pdf}
+    \caption*{\#7 }
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.24\textwidth}
+    \centering
+    \includegraphics[trim={20mm 0mm 0mm 10mm},clip,width=\linewidth]{tex/Image/kimue8.pdf}
+    \caption*{\#8 }
+  \end{subfigure}
+
+  \caption{Sequence of top-view camera images in time order.}
+  \label{figB:kimue_timeorder}
+\end{figure}
+
+\clearpage
+\subsection{重力補償を導入した操作しやすいリーダーアームによって容易になる折り紙タスク}
 
 \begin{figure}[htbp]
   \centering
@@ -154,18 +264,33 @@
 
 　重力補償がなければできないタスクとして，折り紙１枚をソフトフィンガーでつかみ，折り曲げるタスクを行った．ロボットアーム１台で折り紙を折る動作を行うため，折り紙の左端は２点で固定する治具をつけ，折りたたんだ際にも人間がその２点にたたむ紙を刺すという補助を行った．この補助をするためには，操作者が一旦ロボットアームから手を離して折り紙をジグに刺す必要があるため，人間が2人以上いない限りは重力補償制御が不可欠である．\par
 
+\begin{figure}[htbp]
+  \centering
+  \begin{subfigure}[t]{0.32\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{tex/Image/jig.pdf}
+    \caption*{治具}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.32\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{tex/Image/jigwith1paper.pdf}
+    \caption*{治具 + 1枚の折り紙}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.32\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{tex/Image/jigwith2paper.pdf}
+    \caption*{治具 + 2枚の折り紙}
+  \end{subfigure}
+
+  \caption{治具の写真：左から治具単体，紙1枚装着，紙2枚装着．}
+  \label{figC:jig_photographs}
+\end{figure}
 
 \subsubsection{タスクの教示，学習条件}
 ポリシーは計10回のエピソードを取り，治具の位置は変えずにまず人間がだいたい紙の左上に２点刺すようにセッティングした．そのため，紙の位置は毎回微妙にずれている．
 各エピソードで，操作者はリーダーアームを操作して折り紙を折り，一旦折ったらその状態でアームを重力補償下で固定し，紙を治具の2点に刺すという補助を行い，折り目をつける段階へと移行した．\par
 
 
-学習の条件は，CPUにAMD Ryzen 9 9950X，GPUにNVIDIA GeForce RTX 5080，メモリ64GBを搭載したPCを使用した．OSはUbuntu 24.04.3 LTS（Kernel 6.14）を用いた．学習のbatch sizeは8，学習ステップ数は20000ステップとした．
-
-
-また，センサ値は生データをそのまま使用すると，温度変化によって異なる値を示すため，キャリブレーションを行った．具体的には，各試行の開始時に5秒間静止した状態でセンサ値を取得し，その平均値を基準として各時刻のセンサ値から引き算することで，実験を行う日程や時間帯の変化による温度変化の影響を抑制した．\par
-
 \subsubsection{タスクの評価と成功率}
 　折り紙を他に折り目をつけずに教示時と同じ向きに折りたたむことができ，折り紙を自然にしたときに折り目が開かなければ成功とした．10回の試行を行い，9回成功し，成功率は90\%であった．
 \par
-ここで，重力補償がなければそもそも教示ができないため，成功率は0\%であるといえる．\par

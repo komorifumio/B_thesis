@@ -32,139 +32,34 @@
     \end{tabular}
 \end{table}
 
-\subsection*{重力補償のキャリブレーションパラメータ}
+% \subsection*{重力補償のキャリブレーションパラメータ}
 
-本研究で導入した重力補償の各関節アクチュエータ（ROBOTIS Dynamixel）におけるトルク電流比および制御パラメータのキャリブレーション結果を参考までに表\ref{tab:gravity_comp_params}に示す。
+% 本研究で導入した重力補償の各関節アクチュエータ（ROBOTIS Dynamixel）におけるトルク電流比および制御パラメータのキャリブレーション結果を参考までに表\ref{tab:gravity_comp_params}に示す。
 
-なお、ベース関節（ID: 2）およびグリッパ部（ID: 8, 9）については、重力補償の適用対象外とした。
+% なお、ベース関節（ID: 2）およびグリッパ部（ID: 8, 9）については、重力補償の適用対象外とした。
 
-\begin{table}[htbp]
-    \centering
-    \caption{重力補償制御のパラメータ設定}
-    \label{tab:gravity_comp_params}
-    \begin{tabular}{lc}
-        \toprule
-        \textbf{対象関節 (ID)} & \textbf{トルク電流換算係数 ($\tau/I$)} \\
-        \midrule
-        ID: 3 & 0.2267 \\
-        ID: 4 & 0.3245 \\
-        ID: 5 & 0.3035 \\
-        ID: 6 & 0.2545 \\
-        ID: 7 & 0.1515 \\
-        \bottomrule
-    \end{tabular}
-\end{table}
+% \begin{table}[htbp]
+%     \centering
+%     \caption{重力補償制御のパラメータ設定}
+%     \label{tab:gravity_comp_params}
+%     \begin{tabular}{lc}
+%         \toprule
+%         \textbf{対象関節 (ID)} & \textbf{トルク電流換算係数 ($\tau/I$)} \\
+%         \midrule
+%         ID: 3 & 0.2267 \\
+%         ID: 4 & 0.3245 \\
+%         ID: 5 & 0.3035 \\
+%         ID: 6 & 0.2545 \\
+%         ID: 7 & 0.1515 \\
+%         \bottomrule
+%     \end{tabular}
+% \end{table}
 
-\clearpage
-\section*{キムタオル把持タスクの実験時のロボットの動作遷移}
-\setcounter{figure}{0}
-\renewcommand{\thefigure}{B.\arabic{figure}}
+学習の条件は，CPUにAMD Ryzen 9 9950X，GPUにNVIDIA GeForce RTX 5080，メモリ64GBを搭載したPCを使用した．OSはUbuntu 24.04.3 LTS（Kernel 6.14）を用いた．学習のbatch sizeは8，学習ステップ数は20000ステップとした．
 
-キムタオル把持タスクにおけるロボットの動作遷移を以下に示す．FigB.1 およびFig B.2 において，同じ記号（\#1～\#8）が付された画像は，側面カメラおよび上面カメラによって同時に撮影されたフレームに対応している．
+また，センサ値は生データをそのまま使用すると，温度変化によって異なる値を示すため，キャリブレーションを行った．具体的には，各試行の開始時に5秒間静止した状態でセンサ値を取得し，その平均値を基準として各時刻のセンサ値から引き算することで，実験を行う日程や時間帯の変化による温度変化の影響を抑制した．\par
 
-\begin{figure}[htbp]
-  \centering
-  % Top row: 4 screenshots
-  \begin{subfigure}[t]{0.24\textwidth}
-    \centering
-    \includegraphics[width=\linewidth]{tex/Image/kimyoko1.pdf}
-    \caption*{\#1 Initial position}
-  \end{subfigure}\hfill
-  \begin{subfigure}[t]{0.24\textwidth}
-    \centering
-    \includegraphics[width=\linewidth]{tex/Image/kimyoko2.pdf}
-    \caption*{\#2}
-  \end{subfigure}\hfill
-  \begin{subfigure}[t]{0.24\textwidth}
-    \centering
-    \includegraphics[width=\linewidth]{tex/Image/kimyoko3.pdf}
-    \caption*{\#3}
-  \end{subfigure}\hfill
-  \begin{subfigure}[t]{0.24\textwidth}
-    \centering
-    \includegraphics[width=\linewidth]{tex/Image/kimyoko4.pdf}
-    \caption*{\#4}
-  \end{subfigure}
 
-  \vspace{2mm}
-
-  % Bottom row: 4 screenshots
-  \begin{subfigure}[t]{0.24\textwidth}
-    \centering
-    \includegraphics[width=\linewidth]{tex/Image/kimyoko5.pdf}
-    \caption*{\#5 Grasping}
-  \end{subfigure}\hfill
-  \begin{subfigure}[t]{0.24\textwidth}
-    \centering
-    \includegraphics[width=\linewidth]{tex/Image/kimyoko6.pdf}
-    \caption*{\#6 Lifting}
-  \end{subfigure}\hfill
-  \begin{subfigure}[t]{0.24\textwidth}
-    \centering
-    \includegraphics[width=\linewidth]{tex/Image/kimyoko7.pdf}
-    \caption*{\#7 Releasing}
-  \end{subfigure}\hfill
-  \begin{subfigure}[t]{0.24\textwidth}
-    \centering
-    \includegraphics[width=\linewidth]{tex/Image/kimyoko8.pdf}
-    \caption*{\#8 Task complete}
-  \end{subfigure}
-
-  \caption{Sequence of side-view camera images in time order.}
-  \label{figB:kimyoko_timeorder}
-\end{figure}
-
-\begin{figure}[htbp]
-  \centering
-  % Top row: 4 top-view screenshots
-  \begin{subfigure}[t]{0.24\textwidth}
-    \centering
-    \includegraphics[width=\linewidth]{tex/Image/kimue1.pdf}
-    \caption*{\#1 Initial position}
-  \end{subfigure}\hfill
-  \begin{subfigure}[t]{0.24\textwidth}
-    \centering
-    \includegraphics[width=\linewidth]{tex/Image/kimue2.pdf}
-    \caption*{\#2}
-  \end{subfigure}\hfill
-  \begin{subfigure}[t]{0.24\textwidth}
-    \centering
-    \includegraphics[width=\linewidth]{tex/Image/kimue3.pdf}
-    \caption*{\#3}
-  \end{subfigure}\hfill
-  \begin{subfigure}[t]{0.24\textwidth}
-    \centering
-    \includegraphics[width=\linewidth]{tex/Image/kimue4.pdf}
-    \caption*{\#4}
-  \end{subfigure}
-
-  \vspace{2mm}
-
-  % Bottom row: 4 top-view screenshots
-  \begin{subfigure}[t]{0.24\textwidth}
-    \centering
-    \includegraphics[width=\linewidth]{tex/Image/kimue5.pdf}
-    \caption*{\#5 Grasping}
-  \end{subfigure}\hfill
-  \begin{subfigure}[t]{0.24\textwidth}
-    \centering
-    \includegraphics[width=\linewidth]{tex/Image/kimue6.pdf}
-    \caption*{\#6 Lifting}
-  \end{subfigure}\hfill
-  \begin{subfigure}[t]{0.24\textwidth}
-    \centering
-    \includegraphics[width=\linewidth]{tex/Image/kimue7.pdf}
-    \caption*{\#7 Releasing}
-  \end{subfigure}\hfill
-  \begin{subfigure}[t]{0.24\textwidth}
-    \centering
-    \includegraphics[width=\linewidth]{tex/Image/kimue8.pdf}
-    \caption*{\#8 Task complete}
-  \end{subfigure}
-
-  \caption{Sequence of top-view camera images in time order.}
-  \label{figB:kimue_timeorder}
-\end{figure}
 
 
 
@@ -326,7 +221,6 @@
   \caption{Sequence of top-view camera images during origami task in time order.}
   \label{figC:kamiue_timeorder}
 \end{figure}
-
 
 \clearpage
 \section*{触覚を融合したACTモデルの詳細}
