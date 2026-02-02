@@ -1,7 +1,267 @@
 \Appendix
 % 付録
+\section{重力補償を導入した操作しやすいリーダーアームによって容易になる折り紙タスク}
 
-\section*{使用機材の諸元}
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.9\textwidth]{tex/Image/experiment_setup.drawio.pdf}
+  \caption{Experiment setup (layout, observation cameras, and equipment configuration)}
+  \label{fig:experiment_setup}
+\end{figure}
+
+
+　本節では，重力補償制御の有用性を検証するため，ロボットアームと人間が協働して行う折り紙タスクを実施した．
+折り紙のような柔軟物を扱う作業では，正確な折り目をつけるために両手（あるいは複数のマニピュレータ）による操作が求められる場合が多い．本実験では，単腕ロボットアームでこのタスクを遂行するため，人間が環境側に介入して紙を固定する補助を行う設定とした．この際，操作者は「リーダーアームの操作」と「紙の固定補助」という2つの役割を1人で担う必要がある．そのため，補助動作中はリーダーアームから手を離す必要が生じるが，重力補償が適用されていれば，アームはその姿勢を維持し続けることができる．
+
+
+\begin{figure}[htbp]
+  \centering
+  \begin{subfigure}[t]{0.32\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{tex/Image/jig.pdf}
+    \caption*{Jig only}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.32\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{tex/Image/jigwith1paper.pdf}
+    \caption*{Jig with 1 sheet}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.32\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{tex/Image/jigwith2paper.pdf}
+    \caption*{Jig with 2 sheets folded}
+  \end{subfigure}
+
+  \caption{Photographs of jig: from left to right, jig alone, jig with 1 sheet of paper attached, jig with 2 sheets of paper attached.}
+  \label{figC:jig_photographs}
+\end{figure}
+
+\subsection{タスクの教示，学習条件}
+実験セットアップをFig.~\ref{fig:experiment_setup}に示す．単腕での操作を補助するため，折り紙の片側を固定する専用の治具（Fig.~\ref{figC:jig_photographs}）を作製した．タスクの目標は，机上の治具に固定された折り紙を把持し，谷折りにして折り目をつけることである．治具には固定用のピンが設けられており，ロボットが紙を折り返したタイミングで，人間が紙をピンに差し込み固定を行う．
+
+教示データ収集は計10エピソード行った．各エピソードの開始時，折り紙の配置位置は固定せず，操作者が治具に対して概略の位置に配置した．
+
+教示の具体的な手順は以下の通りである（Fig.~\ref{figC:kamiyoko_timeorder}参照）．\par
+
+把持・折り動作: 操作者はリーダーアームを操作し，ソフトフィンガーで紙を把持して折り返す（\#1〜\#5）．\par
+
+姿勢維持（重力補償の活用）: ロボットが紙を折り返した状態で，操作者はリーダーアームから手を離す．重力補償により，ロボットは紙を保持したままの姿勢を維持する．\par
+
+人間による介入: 操作者は手を使って紙を治具のピンに固定する（\#6）．\par
+
+折り目付け: 再びリーダーアームを操作し，爪部分を使用し折り目を作る動作を行う（\#7〜\#8）．\par
+
+
+\clearpage
+\subsection*{折り紙タスクの実験時のロボットの動作遷移}
+\vspace{-3mm}
+
+折り紙タスクにおけるロボットの動作遷移を以下に示す．
+\vspace{-2mm}
+
+\begin{figure}[htbp]
+  \centering
+  % Top row: 4 screenshots
+  \begin{subfigure}[t]{0.24\textwidth}
+    \centering
+    \includegraphics[trim={60mm 30mm 40mm 10mm},clip,width=\linewidth]{tex/Image/kamiyoko1.pdf}
+    \caption*{\#1}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.24\textwidth}
+    \centering
+    \includegraphics[trim={60mm 30mm 40mm 10mm},clip,width=\linewidth]{tex/Image/kamiyoko2.pdf}
+    \caption*{\#2}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.24\textwidth}
+    \centering
+    \includegraphics[trim={60mm 30mm 40mm 10mm},clip,width=\linewidth]{tex/Image/kamiyoko3.pdf}
+    \caption*{\#3}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.24\textwidth}
+    \centering
+    \includegraphics[trim={60mm 30mm 40mm 10mm},clip,width=\linewidth]{tex/Image/kamiyoko4.pdf}
+    \caption*{\#4}
+  \end{subfigure}
+
+  \vspace{0.5mm}
+
+  % Middle row: 4 screenshots
+  \begin{subfigure}[t]{0.24\textwidth}
+    \centering
+    \includegraphics[trim={60mm 30mm 40mm 10mm},clip,width=\linewidth]{tex/Image/kamiyoko5.pdf}
+    \caption*{\#5}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.24\textwidth}
+    \centering
+    \includegraphics[trim={60mm 30mm 40mm 10mm},clip,width=\linewidth]{tex/Image/kamiyoko6.pdf}
+    \caption*{\#6}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.24\textwidth}
+    \centering
+    \includegraphics[trim={60mm 30mm 40mm 10mm},clip,width=\linewidth]{tex/Image/kamiyoko7.pdf}
+    \caption*{\#7}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.24\textwidth}
+    \centering
+    \includegraphics[trim={60mm 30mm 40mm 10mm},clip,width=\linewidth]{tex/Image/kamiyoko8.pdf}
+    \caption*{\#8}
+  \end{subfigure}
+
+  \vspace{0.5mm}
+
+  % Bottom row: 4 screenshots
+  \begin{subfigure}[t]{0.24\textwidth}
+    \centering
+    \includegraphics[trim={60mm 30mm 40mm 10mm},clip,width=\linewidth]{tex/Image/kamiyoko9.pdf}
+    \caption*{\#9}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.24\textwidth}
+    \centering
+    \includegraphics[trim={60mm 30mm 40mm 10mm},clip,width=\linewidth]{tex/Image/kamiyoko10.pdf}
+    \caption*{\#10}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.24\textwidth}
+    \centering
+    \includegraphics[trim={60mm 30mm 40mm 10mm},clip,width=\linewidth]{tex/Image/kamiyoko11.pdf}
+    \caption*{\#11}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.24\textwidth}
+    \centering
+    \includegraphics[trim={60mm 30mm 40mm 10mm},clip,width=\linewidth]{tex/Image/kamiyoko12.pdf}
+    \caption*{\#12}
+  \end{subfigure}
+
+  \caption{Sequence of side-view camera images during origami task in time order.}
+  \label{figC:kamiyoko_timeorder}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  % Top row: 4 top-view screenshots
+  \begin{subfigure}[t]{0.24\textwidth}
+    \centering
+    \includegraphics[trim={60mm 20mm 40mm 10mm},clip,width=\linewidth]{tex/Image/kamiue1.pdf}
+    \caption*{\#1}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.24\textwidth}
+    \centering
+    \includegraphics[trim={60mm 20mm 40mm 10mm},clip,width=\linewidth]{tex/Image/kamiue2.pdf}
+    \caption*{\#2}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.24\textwidth}
+    \centering
+    \includegraphics[trim={60mm 20mm 40mm 10mm},clip,width=\linewidth]{tex/Image/kamiue3.pdf}
+    \caption*{\#3}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.24\textwidth}
+    \centering
+    \includegraphics[trim={60mm 20mm 40mm 10mm},clip,width=\linewidth]{tex/Image/kamiue4.pdf}
+    \caption*{\#4}
+  \end{subfigure}
+
+  \vspace{2mm}
+
+  % Middle row: 4 top-view screenshots
+  \begin{subfigure}[t]{0.24\textwidth}
+    \centering
+    \includegraphics[trim={60mm 20mm 40mm 10mm},clip,width=\linewidth]{tex/Image/kamiue5.pdf}
+    \caption*{\#5}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.24\textwidth}
+    \centering
+    \includegraphics[trim={60mm 20mm 40mm 10mm},clip,width=\linewidth]{tex/Image/kamiue6.pdf}
+    \caption*{\#6}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.24\textwidth}
+    \centering
+    \includegraphics[trim={60mm 20mm 40mm 10mm},clip,width=\linewidth]{tex/Image/kamiue7.pdf}
+    \caption*{\#7}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.24\textwidth}
+    \centering
+    \includegraphics[trim={60mm 20mm 40mm 10mm},clip,width=\linewidth]{tex/Image/kamiue8.pdf}
+    \caption*{\#8}
+  \end{subfigure}
+
+  \vspace{2mm}
+
+  % Bottom row: 4 top-view screenshots
+  \begin{subfigure}[t]{0.24\textwidth}
+    \centering
+    \includegraphics[trim={60mm 20mm 40mm 10mm},clip,width=\linewidth]{tex/Image/kamiue9.pdf}
+    \caption*{\#9}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.24\textwidth}
+    \centering
+    \includegraphics[trim={60mm 20mm 40mm 10mm},clip,width=\linewidth]{tex/Image/kamiue10.pdf}
+    \caption*{\#10}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.24\textwidth}
+    \centering
+    \includegraphics[trim={60mm 20mm 40mm 10mm},clip,width=\linewidth]{tex/Image/kamiue11.pdf}
+    \caption*{\#11}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.24\textwidth}
+    \centering
+    \includegraphics[trim={60mm 20mm 40mm 10mm},clip,width=\linewidth]{tex/Image/kamiue12.pdf}
+    \caption*{\#12}
+  \end{subfigure}
+
+  \caption{Sequence of top-view camera images during origami task in time order.}
+  \label{figC:kamiue_timeorder}
+\end{figure}
+
+\FloatBarrier
+
+\subsection{タスクの評価と成功率}
+　タスクの成功条件は，「余分な折り目をつけることなく，教示と同様の方向に紙を折ることができ，かつ外力を加えない状態で折り目が維持されていること」とした．実験の結果，10回の試行のうち9回で成功し，成功率は90\%であった．
+\par
+
+　本研究で導入した重力補償制御下で，アームの重量を感じさせない直感的な操作感が実現した．さらに特筆すべき点は，アームを任意の位置で静止させ，その姿勢を維持できることである．これにより，操作者が一時的にアームから手を離し，環境側（対象物や治具）への介入を行うといった協働作業が可能となった．
+
+　この利点は，実施した折り紙タスクにおいて顕著に確認された．本タスクでは，「アームによる折り動作」と「人間による治具への固定補助」を交互に行う必要がある．重力補償機能により，操作者はロボットの操作を中断してもその作業状態を維持できるため，一人での教示の幅を大きく拡大できた．\par
+　本実験では筋電位計測による作業負荷計測やアンケート手法，教示にかかる時間比較などの定量的な負荷評価は行っていないものの，実機運用を通じて，重力補償の導入が教示者の主観的負担を大幅に軽減し，かつ一人で教示可能なタスクの幅を拡大することを確認した．
+
+
+\clearpage
+\section{リーダーアームのグリッパ設計}
+　リーダーアームの操作性を向上させるため，人間の手による把持に適した形状のグリッパを設計した（Fig.~\ref{fig:opened_leadergripper}, Fig.~\ref{fig:closed_leadergripper}）．本グリッパは，手掌部で安定して保持可能な円筒形状のグリップと，人差し指・親指を挿入するための操作用リングを備えている．これにより，操作者は手のひら全体でグリッパを支えつつ，指先を用いて繊細な開閉操作を行うことが可能となる．
+
+
+\begin{center}
+  \begin{minipage}{0.40\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{tex/Image/openleadergripper.drawio.pdf}
+    \captionof{figure}{Gripper in open state}
+    \label{fig:opened_leadergripper}
+  \end{minipage}\hfill
+  \begin{minipage}{0.40\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{tex/Image/closedleadergripper.pdf}
+    \captionof{figure}{Gripper in closed state}
+    \label{fig:closed_leadergripper}
+  \end{minipage}
+\end{center}
+
+また，操作者がグリッパを把持した際，人間の前腕とリーダーアームの前腕リンクが幾何学的に対応するよう設計されている（Fig.~\ref{fig:leader_arm_with_me}, Fig.~\ref{fig:leader_gripper_with_me}）．これにより，操作者は自身の腕の延長としてリーダーアームを直感的に操作することが可能となり，学習に適した自然な教示データの収集が容易となる．
+
+\begin{center}
+  \begin{minipage}{0.40\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{tex/Image/leaderarmwithme.drawio.pdf}
+    \captionof{figure}{Leader arm with operator (overview)}
+    \label{fig:leader_arm_with_me}
+  \end{minipage}\hfill
+  \begin{minipage}{0.40\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{tex/Image/leadergripperwithme.pdf}
+    \captionof{figure}{Leader gripper held by operator}
+    \label{fig:leader_gripper_with_me}
+  \end{minipage}
+\end{center}
+
+\clearpage
+\section{使用機材の諸元}
 本研究の実験システムを構成するロボットアームおよびカメラの主要な仕様を、表\ref{tab:system_specs}にまとめる。
 
 \begin{table}[htbp]
