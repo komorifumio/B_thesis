@@ -91,12 +91,12 @@
   \centering
   \begin{minipage}[t]{0.45\textwidth}
     \centering
-    \includegraphics[width=\linewidth]{tex/Image/30mmfing.pdf}
+    \scalebox{-1}[-1]{\includegraphics[width=\linewidth]{tex/Image/30mmfing.pdf}}
     \captionof{figure}{Fingers extended by 30mm (same as demonstration)}\label{fig:30mmfing}
   \end{minipage}\hfill
   \begin{minipage}[t]{0.45\textwidth}
     \centering
-    \includegraphics[width=\linewidth]{tex/Image/0mmfing.pdf}
+    \scalebox{-1}[-1]{\includegraphics[width=\linewidth]{tex/Image/0mmfing.pdf}}
     \captionof{figure}{Fingers extended by 0mm}\label{fig:0mmfing}
   \end{minipage}
 \end{figure}
@@ -206,22 +206,22 @@ Fig.~\ref{figB:kimyoko_timeorder} および Fig.~\ref{figB:kimue_timeorder} に�
   \begin{subfigure}[t]{0.24\textwidth}
     \centering
     \includegraphics[trim={20mm 0mm 0mm 10mm},clip,width=\linewidth]{tex/Image/kimue1.pdf}
-    \caption*{\#1}
+    \caption*{0.0s}
   \end{subfigure}\hfill
   \begin{subfigure}[t]{0.24\textwidth}
     \centering
     \includegraphics[trim={20mm 0mm 0mm 10mm},clip,width=\linewidth]{tex/Image/kimue2.pdf}
-    \caption*{\#2}
+    \caption*{2.0s}
   \end{subfigure}\hfill
   \begin{subfigure}[t]{0.24\textwidth}
     \centering
     \includegraphics[trim={20mm 0mm 0mm 10mm},clip,width=\linewidth]{tex/Image/kimue3.pdf}
-    \caption*{\#3}
+    \caption*{4.0s}
   \end{subfigure}\hfill
   \begin{subfigure}[t]{0.24\textwidth}
     \centering
     \includegraphics[trim={20mm 0mm 0mm 10mm},clip,width=\linewidth]{tex/Image/kimue4.pdf}
-    \caption*{\#4}
+    \caption*{6.0s}
   \end{subfigure}
 
   \vspace{2mm}
@@ -230,25 +230,32 @@ Fig.~\ref{figB:kimyoko_timeorder} および Fig.~\ref{figB:kimue_timeorder} に�
   \begin{subfigure}[t]{0.24\textwidth}
     \centering
     \includegraphics[trim={20mm 0mm 0mm 10mm},clip,width=\linewidth]{tex/Image/kimue5.pdf}
-    \caption*{\#5 }
+    \caption*{8.0s}
   \end{subfigure}\hfill
   \begin{subfigure}[t]{0.24\textwidth}
     \centering
     \includegraphics[trim={20mm 0mm 0mm 10mm},clip,width=\linewidth]{tex/Image/kimue6.pdf}
-    \caption*{\#6 }
+    \caption*{10.0s}
   \end{subfigure}\hfill
   \begin{subfigure}[t]{0.24\textwidth}
     \centering
     \includegraphics[trim={20mm 0mm 0mm 10mm},clip,width=\linewidth]{tex/Image/kimue7.pdf}
-    \caption*{\#7 }
+    \caption*{12.0s}
   \end{subfigure}\hfill
   \begin{subfigure}[t]{0.24\textwidth}
     \centering
     \includegraphics[trim={20mm 0mm 0mm 10mm},clip,width=\linewidth]{tex/Image/kimue8.pdf}
-    \caption*{\#8 }
+    \caption*{14.0s}
   \end{subfigure}
 
   \caption{Sequence of top-view camera images in time order.}
   \label{figB:kimue_timeorder}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=1.0\linewidth]{tex/Image/sensorgraph.pdf}
+  \caption{Representative response of the ionic-liquid tactile sensor during a grasp trial. The plot shows the sensor signal (normalized units) over time, highlighting contact events as rapid changes and the baseline stability after calibration to remove temperature-dependent drift.}
+  \label{fig:sensor_graph}
 \end{figure}
 
