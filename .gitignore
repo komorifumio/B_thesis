@@ -8,3 +8,7 @@ main_thesis.pdf
 *.out
 *.synctex.gz
 
+*.bak
+*.fdb_latexmk
+*.fls
+*.synctex(busy)
